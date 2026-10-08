@@ -42,7 +42,7 @@ Measured pairwise differences, always exclusively **before** the GFH anchor:
 | October → November 2025 | 308 | `0x3010`–`0x489F` | **0** |
 | May → November 2025 | 309 | `0x3010`–`0x489F` | **0** |
 
-The start-of-partition `[0x0,0x8000)` is the **raw NAND preamble** in these OTA images, not the examined MediaTek GFH-anchored payload. Its exact fields (NAND boot metadata, checksum, signature, etc.) **have not been conclusively decoded**. Do not label all changed bytes as signatures or presume this header may be rewritten safely.
+The start-of-partition `[0x0,0x8000)` is the **raw NAND preamble** in these OTA images, not the examined MediaTek GFH-anchored payload. **Follow-up (2026-10-08):** the changed May→Nov 2025 bytes are now **fully classified as GPT GUIDs and CRC32s** (16 disk GUID bytes, 285 changed unique-partition GUID bytes, 4 header CRC bytes, 4 partition-array CRC bytes); none is an unknown signature or preloader-code byte. The preamble also contains `BOOTLOADER! V006 NFIINFO`, `BRLYT` and a CRC-valid GPT with 18 stable logical entries. See [the complete decoded NAND/GPT report](crumpet-nand-gpt-2019-2025.md). **Do not assume the header can be rewritten safely**.
 
 **Interpretation:** A difference between two **whole `brhgptpl_0` SHA-256 values does not establish different executable Preloader code**. For these official 2025 updates, no differences were found within the complete GFH-anchored Preloader payload. The same observation cannot be generalized to all board revisions or in-device NAND contents.
 
