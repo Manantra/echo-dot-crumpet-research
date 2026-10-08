@@ -3,6 +3,8 @@
 - [R0rt1z2/amonet-koboreru](https://github.com/R0rt1z2/amonet-koboreru) — exploit source, **untested** Crumpet support.
 - [Crumpet patch source](https://github.com/R0rt1z2/amonet-koboreru/blob/main/devices/crumpet.c).
 - [MTKClient (pinned 2026-09-12 code)](https://github.com/bkerler/mtkclient/tree/cd25cf9) — hardware 0x8167 XFLASH mapping, DRAM response semantics, stage-2 exception and DA version selection.
+- [Crumpet HW/DA version matching and Pexar counterexample](../docs/mt8167-hw-revision-da-selection.md) — cross-device version matching and mode differences.
+- [MTKClient Pexar MT8167 issue #9](https://github.com/bkerler/mtkclient/issues/9) — V5 DA Stage 2 success on eMMC, not Crumpet.
 - [Crumpet DA2 handoff and 256 MiB DRAM analysis](../docs/da2-handoff-status-memory.md) — normal-boot UART memory map, USB status decoding, exception semantics.
 - [Read-only XFLASH status packet decoder](../scripts/decode_xflash_status.py) — synthetic and previously captured status frames only.
 - [Direct DA2 executable and Crumpet EMI compatibility research](../docs/da2-binary-emi-compatibility.md) — verified ARM boot entry, bundled NAND markers and identical official 400-byte EMI trailer across 2021–2025.
