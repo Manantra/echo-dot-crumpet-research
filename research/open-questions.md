@@ -17,4 +17,6 @@
 
 13. **Non-destructive evidence only:** Use the [offline XFLASH response decoder](../scripts/decode_xflash_status.py) with an already captured, redacted 12-byte status header plus payload to distinguish successful reply, explicit error, bad framing and timeout. Need existing USB reconnect/transport logs, selected DA file hash and EMI hash; never infer a root method from an early DA1 sync.
 
+14. **DA version/mode evidence:** A real Crumpet reports HW 0xCB00/SW1 but bundled DAs mark HW 0xCA00/SW0; source permits backward-compatible matching. A [separate same-revision MT8167 eMMC device](../docs/mt8167-hw-revision-da-selection.md) booted a V5-named DA in **Preloader** mode, while Crumpet reports fail via **BROM + EMI**. Next: compare existing traces for selected DA hash, mode, EMI handoff and USB response; do not infer a working unlock.
+
 No destructive testing without a validated recovery mechanism.
