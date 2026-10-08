@@ -31,6 +31,22 @@ class RemoteProbeTests(unittest.TestCase):
             self.assertEqual(findings[0][0], "brhgptpl_0")
             self.assertIn("VERIFIED brhgptpl_0", printed.getvalue())
 
+
+    def test_include_lk_verifies_optional_partition(self):
+        with tempfile.TemporaryDirectory() as folder:
+            path = Path(folder) / "fake-lk-ota.zip"
+            fixture(path, name="lk")
+            raw = path.read_bytes()
+            with patch.object(remote_ota_probe, "fetch_range",
+                              side_effect=lambda url, a, b: raw[a:b + 1]):
+                with contextlib.redirect_stdout(io.StringIO()) as printed:
+                    none = remote_ota_probe.probe(TEST_URL)
+                    matches = remote_ota_probe.probe(TEST_URL, include_lk=True)
+            self.assertEqual(none, [])
+            self.assertEqual([entry[0] for entry in matches], ["lk"])
+            self.assertIn("VERIFIED LK", printed.getvalue())
+            self.assertIn("flash:unlock=False", printed.getvalue())
+
     def test_rejects_non_amazon_host(self):
         with self.assertRaisesRegex(ValueError, "Only official Amazon CDN"):
             remote_ota_probe.probe("https://example.com/fake.bin")
