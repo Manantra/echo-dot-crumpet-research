@@ -18,6 +18,8 @@ def manufactured_image():
     struct.pack_into("<I", data, base + 4, 0x38)
     data[base + 8:base + 18] = b"FILE_INFO\x00"
     struct.pack_into("<I", data, base + 0x1c, 0x200D00)
+    # Required official-image structural check: A32 branch at entry +4.
+    data[base + 0x304:base + 0x308] = bytes.fromhex("030000ea")
     return data
 
 
