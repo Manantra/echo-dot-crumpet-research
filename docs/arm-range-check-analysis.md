@@ -67,6 +67,8 @@ In context this behaves like an **unsigned interval-overlap predicate** for a pa
 
 The image with embedded **2023-11-03** build date from the 2025 OTA contains **identical instruction bytes** at the new helper and wrapper addresses inspected above, indicating this new guard survived at least until that image.
 
+**Update (2026-10-08):** We independently decoded the initialized text/BSS boundaries: text `[0x00201000,0x002254CC)`; BSS `[0x00102180,0x00109DAC)`. The Crumpet payload's block-device target `0x001086EC` lies **inside protected BSS**. This is corroborated by a new [read-only audit tool](../scripts/audit_sram_guard.py) and the [conditional SRAM-overwrite analysis](sram-guard-exploit-intersection.md).
+
 ## Why this matters
 
 This gives **positive code-level evidence of a substantially changed bounds-checking implementation** between the builds dated 2022-03-23 and 2023-07-26. The old diagnostic's disappearance was not merely a string-strip artifact in these images.
