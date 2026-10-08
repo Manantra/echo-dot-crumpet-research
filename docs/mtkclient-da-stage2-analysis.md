@@ -91,6 +91,8 @@ The scanner checks loader record magic, hardware and software identifiers, secti
 
 **Update (2026-10-08):** We subsequently compared the two DA2 ARM binaries directly and extracted four official Crumpet preloader EMI trailers read-only. All four EMI blocks are **identical** (400 bytes, `MTK_BLOADER_INFO_v28`, SHA-256 `c2a394668216e8bc20959bef29aee38002854a0b38444f6fcd9877fd5d548120`). Both DA2 images branch to `0x40000024` and contain NAND/BMT marker strings, but differ substantially elsewhere. See [DA2 and EMI compatibility report](da2-binary-emi-compatibility.md). This does **not** establish that the observed Stage-2 failure has been fixed.
 
+**Follow-up (2026-10-08):** We additionally verified that the two bundled MT8167 DA1 binaries each embed SHA-1 of their *own*, not cross-version, DA2 body; the host's `upload_da1()` method ignores three setup return values and can report a successful final DA sync even if all three calls return False (reproduced with synthetic USB mocks against the original method). See [DA1/DA2 pairing and setup-flow audit](da1-da2-pairing-handoff-checks.md). This is an improvement in understanding diagnostics, **not a working Crumpet DA fix**.
+
 ## 7. Community-reported hardware states differ
 
 The independent issue reports distinguish:
