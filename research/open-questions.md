@@ -19,4 +19,6 @@
 
 14. **DA version/mode evidence:** A real Crumpet reports HW 0xCB00/SW1 but bundled DAs mark HW 0xCA00/SW0; source permits backward-compatible matching. A [separate same-revision MT8167 eMMC device](../docs/mt8167-hw-revision-da-selection.md) booted a V5-named DA in **Preloader** mode, while Crumpet reports fail via **BROM + EMI**. Next: compare existing traces for selected DA hash, mode, EMI handoff and USB response; do not infer a working unlock.
 
+15. **DA1↔DA2 pairing and host setup-check bug (partly resolved):** The two bundled MT8167 DA1s contain the SHA-1 of *their respective* DA2 without the 0x100-byte signature trailer; cross-bundle references are absent. The upstream host [ignores False results from three DA1 setup calls](../docs/da1-da2-pairing-handoff-checks.md) even when it later reports a successful sync. Next: determine whether any existing Crumpet trace records these return values, effective patched/unpatched DA1/DA2 hashes and exact setup outcomes. This is not proof of a hardware exploit or a workaround; no DA mixing or testing on unrecoverable hardware.
+
 No destructive testing without a validated recovery mechanism.
