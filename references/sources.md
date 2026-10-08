@@ -2,6 +2,8 @@
 
 - [R0rt1z2/amonet-koboreru](https://github.com/R0rt1z2/amonet-koboreru) — exploit source, **untested** Crumpet support.
 - [Crumpet patch source](https://github.com/R0rt1z2/amonet-koboreru/blob/main/devices/crumpet.c).
+- [Crumpet ARM bootstrap BSS-zeroing and Thumb-handoff verification](../docs/crumpet-arm-bootstrap-memory-map.md) — 17 exact A32 instructions and embedded SRAM/Thumb constants across 2019–2025.
+- [Read-only Crumpet ARM bootstrap checker](../scripts/audit_preloader_bootstrap.py) — fails closed on unfamiliar opcodes, no firmware patching.
 - [Public Crumpet Amonet hardcoded patch-site safety audit](../docs/amonet-hardcoded-patch-address-audit.md) — direct patch writer + five verified GFH-mapped Preloader images, with original image SHA-256, no live testing.
 - [Amonet-koboreru Crumpet source at analyzed revision](https://github.com/R0rt1z2/amonet-koboreru/blob/2a28fd0/amonet/devices/crumpet.c) — five literal patch addresses; [direct patch helpers](https://github.com/R0rt1z2/amonet-koboreru/blob/2a28fd0/amonet/patch.c).
 - [CRC-verified Crumpet NAND/GPT and four boot-copy header research](../docs/crumpet-nand-gpt-2019-2025.md) — exact 2019–2025 partition ranges, media header structures, GUID/CRC delta classification.
