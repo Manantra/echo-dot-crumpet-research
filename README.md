@@ -10,6 +10,7 @@ Public, community-oriented **read-only reverse-engineering research** for the Am
 - Public [Crumpet UART logs](https://github.com/jvandewiel/no-alexa/tree/main/logicanalyzer/uart_logs) cover 2019 and 2021 preloaders.
 - A [2019 raw-NAND excerpt](https://github.com/jvandewiel/no-alexa/blob/main/dumped_files/brhgptpl_0.bin) is available. Whole-file SHA-256: `e51970de327ec58ba32ee506b7b1358ff7877e43672be833f5d6a7c2b2a68637`.
 - **New (2026-10-08):** We verified and extracted **four March 2021 Crumpet preloader images** from Amazon's Fire OS 6.5.4.8 OTA, with their SHA-256 checksums validated against the official update manifest. [Full analysis](docs/ota-2021-analysis.md).
+- **Unlock research update:** Official May-2025 `lk` contains vendor `flash:unlock`, `flash:otucert`, `flash:otucode`, and one-time unlock certificate verifier strings. An authenticated certificate / functioning production unlock remains **unknown**. [Detailed feasibility review](docs/root-unlock-feasibility-2026-10-08.md).
 - **Verified newer header-handling call chain:** the loader reads the 512-byte header, parses address/length, optionally transforms the TEE destination, checks protected memory ranges, then performs its larger read. The ATF/TEE verification wrapper follows the load. [Details](docs/tee-header-address-processing.md).
 - **Key SRAM protection finding:** newer preloader builds guard BSS `[0x00102180, 0x00109DAC)`, which **contains the published payload's block-device target `0x001086EC`**. A hypothetical copy matching the payload's effective zero destination and size `0x00108804` intersects this protected region, so the new guard would reject it *if passed the actual copy address and size*. [Verified boundaries and conditional analysis](docs/sram-guard-exploit-intersection.md).
 - **ARM analysis:** The 2022 preloader range checks and the 2023/2024-era rewritten text/BSS guards have been disassembled, with confirmed literal cross-references and calls. [Code analysis](docs/arm-range-check-analysis.md). This does not establish exploitable behaviour.
@@ -20,6 +21,7 @@ Public, community-oriented **read-only reverse-engineering research** for the Am
 ## Where to start
 
 - [Research status and evidence levels](STATUS.md)
+- **[Current Crumpet root/unlock feasibility assessment (2026-10-08): verified LK certificate code, BROM limitations and NAND recovery](docs/root-unlock-feasibility-2026-10-08.md)**
 - [Boot chain and exploit preconditions](docs/boot-chain.md)
 - [Preliminary preloader binary analysis](docs/preloader-analysis.md)
 - [Verified 2021 OTA partition inventory, SHA-256 hashes and 2019 comparison](docs/ota-2021-analysis.md)
