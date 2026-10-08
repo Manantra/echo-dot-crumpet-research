@@ -3,6 +3,8 @@
 - [R0rt1z2/amonet-koboreru](https://github.com/R0rt1z2/amonet-koboreru) — exploit source, **untested** Crumpet support.
 - [Crumpet patch source](https://github.com/R0rt1z2/amonet-koboreru/blob/main/devices/crumpet.c).
 - [MTKClient (pinned 2026-09-12 code)](https://github.com/bkerler/mtkclient/tree/cd25cf9) — hardware 0x8167 XFLASH mapping, DRAM response semantics, stage-2 exception and DA version selection.
+- [Crumpet DA2 handoff and 256 MiB DRAM analysis](../docs/da2-handoff-status-memory.md) — normal-boot UART memory map, USB status decoding, exception semantics.
+- [Read-only XFLASH status packet decoder](../scripts/decode_xflash_status.py) — synthetic and previously captured status frames only.
 - [Direct DA2 executable and Crumpet EMI compatibility research](../docs/da2-binary-emi-compatibility.md) — verified ARM boot entry, bundled NAND markers and identical official 400-byte EMI trailer across 2021–2025.
 - [Our MTKClient Stage-2 forensic report](../docs/mtkclient-da-stage2-analysis.md) — host status messages, two DA binaries, duplicate-selection finding and read-only reproduction.
 - [Upstream issue #2](https://github.com/R0rt1z2/amonet-koboreru/issues/2) — maintainer's NAND/recovery warning and community BROM/DA tests.
