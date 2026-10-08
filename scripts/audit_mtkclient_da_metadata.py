@@ -90,10 +90,28 @@ def scan_directory(directory, target=0x8167):
     return matches, retained, suppressed
 
 
+def eligible_for_device(entry, hwver, swver):
+    """Mirror upstream DAconfig.setup(): metadata acceptance, not runtime safety."""
+    return ((entry["hw_version"] <= hwver or hwver == 0) and
+            (entry["sw_version"] <= swver or swver == 0))
+
+
+def select_for_device(retained, hwver, swver):
+    """Return first matching loader, mimicking the upstream choice order."""
+    return next((entry for entry in retained
+                 if eligible_for_device(entry, hwver, swver)), None)
+
+
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("loader_directory", type=Path)
     parser.add_argument("--hw", type=lambda value: int(value, 0), default=0x8167)
+    parser.add_argument("--device-hwver", type=lambda v: int(v, 0),
+                        help="Reported device hardware revision (e.g. 0xcb00)")
+    parser.add_argument("--device-swver", type=lambda v: int(v, 0), default=1,
+                        help="Reported device software revision, default 1")
+    parser.add_argument("--device-subcode", type=lambda v: int(v, 0), default=0x8a00,
+                        help="Reported subcode, default 0x8a00")
     args = parser.parse_args()
     found, selected, suppressed = scan_directory(args.loader_directory, args.hw)
     print(f"READ-ONLY DA metadata audit for HW {args.hw:#06x}")
@@ -109,6 +127,23 @@ def main():
     print("Expected retained by first matching version:", len(selected))
     for entry in suppressed:
         print(f"  Alternative hidden by duplicate/version filter: {entry['filename']}")
+    if args.device_hwver is not None:
+        chosen = select_for_device(selected, args.device_hwver, args.device_swver)
+        print(f"Reported device revision: hwver={args.device_hwver:#06x}, "
+              f"swver={args.device_swver:#06x}, "
+              f"subcode={args.device_subcode:#06x}")
+        if chosen is None:
+            print("MTKClient-style version filter: NO ELIGIBLE BUNDLED DA")
+        else:
+            print(f"MTKClient-style version filter chooses: {chosen['filename']}")
+            exact = (chosen["hw_version"] == args.device_hwver and
+                     chosen["sw_version"] == args.device_swver and
+                     chosen["sub_code"] == args.device_subcode)
+            print(f"All revision fields match exactly: {exact}")
+            if not exact:
+                print("IMPORTANT: upstream selection uses <= for HW/SW revision "
+                      "and does not check a live device subcode here.")
+                print("This is NOT evidence of a failure or authorization bypass.")
     print("Version-filter result is derived from source code, NOT from running MTKClient.")
     print("Finding a different loader does not prove its safety or Crumpet compatibility.")
     print("No DA binary exported, patched or uploaded; no device contacted.")
