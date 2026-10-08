@@ -55,7 +55,41 @@ Potential alternative: A specific, compatible device Preloader / EMI blob and *m
 
 `get_nand_info()` is part of `reinit()`, which runs **only after Stage 2 returns success**. The Crumpet issue reports timeout before this point. Consequently its log is insufficient to show whether the chosen DA's NAND driver would work, even though the host library implements an NAND-info protocol.
 
-### 7. Community-reported hardware states differ
+### Newly verified: two different MT8167 DA binaries in the same upstream checkout
+
+We parsed the **actual bundled DA loader metadata** from the cloned `bkerler/mtkclient` commit `cd25cf9` without executing or redistributing either DA.
+
+| Loader filename | Full-file SHA-256 | DA1 bytes / load address | DA2 bytes / load address | Subcode / HW ver / SW ver |
+|---|---|---|---|---|
+| `MTK_DA_V5.bin` | `aef234190ccb8145d2e3b8459741e9adb70f2caa8481aa216c1b25152afaca1f` | `0x27188` / `0x00200000` | `0x55A98` / `0x40000000` | `0x8A00` / `0xCA00` / `0x0000` |
+| `MTK_AllInOne_DA_mt6590.bin` | `49a1413765ed0e21fbd2c62f0e295665d0236eeb255846bd77f3329a3a86cc64` | `0x21B6C` / `0x00200000` | `0x31698` / `0x40000000` | `0x8A00` / `0xCA00` / `0x0000` |
+
+Both records explicitly target `HW 0x8167`, have **three DA regions** and **0x100-byte DA1/DA2 signature sections**. The different Stage-2 sizes show these are **different** DA binaries, not identical duplicates. Each targets Stage-2 RAM address **`0x40000000`** in its own metadata. This location is a **DA loading address, not an instruction to flash the device**.
+
+### Concrete DA selection limitation (source audit)
+
+In [`daconfig.py` lines 100–120 and 192–219](https://github.com/bkerler/mtkclient/blob/cd25cf9/mtkclient/Library/DA/daconfig.py#L100-L220), loader filenames are scanned in descending sort order, the first compatible entry is retained, and a later record with the same HW and SW versions may be treated as duplicate. Thus, under that repository's default filename order, **`MTK_DA_V5.bin` comes first and the alternative `MTK_AllInOne_DA_mt6590.bin` entry is suppressed** for the matching `0x8167` version tuple.
+
+The duplicate suppression has an **actual source-code defect** at line 196:
+
+```python
+if da.hw_sub_code == da.hw_sub_code:
+```
+
+This self-comparison is tautologically true and does **not** compare `da.hw_sub_code` to `ldr.hw_sub_code`. It can incorrectly merge entries that differ *only* in subcode. **However, the two bundled `0x8167` entries listed above already share the same subcode `0x8A00`; that bug alone does not explain their suppression.** The first-compatible-entry/duplicate-version policy does.
+
+**Impact on Crumpet remains unproven.** The issue logs do not pin the exact selected DA file hash, version, image-entry offsets or USB behavior at Stage-2 handoff. Nothing here demonstrates that attempting the alternative DA would work or be safe. The goal is **offline compatibility analysis**, not experimentally sending different DA binaries to irreplaceable hardware.
+
+To reproduce with your own fresh **local MTKClient source checkout** (this tool reads only existing file metadata):
+
+```bash
+python3 scripts/audit_mtkclient_da_metadata.py /path/to/mtkclient/mtkclient/Loader
+python3 -m unittest discover -s tests -v
+```
+
+The scanner checks loader record magic, hardware and software identifiers, section sizes, declared SRAM/DRAM addresses, file bounds, and per-file hashes. It predicts deduplication outcomes from the source logic. **It never connects to USB or writes files, devices or firmware.**
+
+## 7. Community-reported hardware states differ
 
 The independent issue reports distinguish:
 
