@@ -10,6 +10,7 @@ Public, community-oriented **read-only reverse-engineering research** for the Am
 - Public [Crumpet UART logs](https://github.com/jvandewiel/no-alexa/tree/main/logicanalyzer/uart_logs) cover 2019 and 2021 preloaders.
 - A [2019 raw-NAND excerpt](https://github.com/jvandewiel/no-alexa/blob/main/dumped_files/brhgptpl_0.bin) is available. Whole-file SHA-256: `e51970de327ec58ba32ee506b7b1358ff7877e43672be833f5d6a7c2b2a68637`.
 - **New (2026-10-08):** We verified and extracted **four March 2021 Crumpet preloader images** from Amazon's Fire OS 6.5.4.8 OTA, with their SHA-256 checksums validated against the official update manifest. [Full analysis](docs/ota-2021-analysis.md).
+- **Latest catalogued Crumpet OTA checked:** We verified November **2025** (Fire OS 6.5.7.1, NS6571/6208) and three earlier 2025 OTA images. `lk` remains **byte-identical to Jan 2024**; the full Preloader region from the MediaTek GFH header at `0x8000` is **identical across four 2025 updates** despite differing raw-NAND partition hashes. The **four Nov 2025 boot copies** also have identical GFH images, varying by only 4 position-related prefix bytes each. [Verified comparison](docs/latest-2025-ota-boot-payload-comparison.md).
 - **New DA1→DA2 integrity and DA1 sync diagnostic finding:** Both bundled MT8167 DA1 variants embed the **SHA-1 of their own DA2 body** (signature excluded), not the other's. The upstream MTKClient DA1 setup function ignores `False` results from `sync()`, `setup_env()` and `setup_hw_init()`, yet may still log successful DA sync; independently reproduced with synthetic hardware-free mocks. [Detailed evidence](docs/da1-da2-pairing-handoff-checks.md).
 - **Revision-match cross-check:** A reported Crumpet preloader has HW `0x8167`, subcode `0x8A00`, HW revision `0xCB00`, SW revision `1`; bundled DA metadata is `0xCA00/SW0`. MTKClient accepts older DAs. An independent same-revision MT8167 eMMC device reaches DA2 using a **same-named**, not hash-verified, V5 loader over **Preloader mode**. This contrasts with Crumpet's BROM/EMI timeout. [Version-matching audit](docs/mt8167-hw-revision-da-selection.md).
 - **New Stage-2 handoff finding:** MTKClient's `Stage was't executed` message can be triggered by a missing/truncated **XFLASH USB status response**, not just device failure; the Crumpet's 2019/2021 UART logs show **256 MiB RAM at `0x40000000`**, with both DA2 code/BSS layouts fitting physically. [Status and memory analysis](docs/da2-handoff-status-memory.md).
@@ -26,6 +27,7 @@ Public, community-oriented **read-only reverse-engineering research** for the Am
 ## Where to start
 
 - [Research status and evidence levels](STATUS.md)
+- **[Latest 2025 Crumpet LK/Preloader proof: full hash changes occur only in NAND prefix](docs/latest-2025-ota-boot-payload-comparison.md)**
 - **[DA1↔DA2 cryptographic pairing, BROM vs Preloader setup, and unchecked DA1 results](docs/da1-da2-pairing-handoff-checks.md)**
 - **[MTKClient MT8167 DA Stage-2 timeout: source-code analysis](docs/mtkclient-da-stage2-analysis.md)**
 - **[MT8167 DA2 executable comparison and verified 2021–2025 Crumpet EMI block](docs/da2-binary-emi-compatibility.md)**
@@ -69,6 +71,9 @@ python3 scripts/decode_xflash_status.py --hex 'efeeee fe 01000000 04000000 53594
 python3 scripts/audit_mtkclient_da_metadata.py /path/to/mtkclient/mtkclient/Loader --device-hwver 0xcb00 --device-swver 1 --device-subcode 0x8a00
 python3 scripts/audit_da_pair_integrity.py /path/to/mtkclient/mtkclient/Loader
 python3 scripts/audit_xflash_mode_flow.py /path/to/mtkclient/mtkclient/Library/DA/xflash/xflash_lib.py
+# Official Amazon OTA Range reads, comparing only hashes/offsets (no saved binaries)
+python3 scripts/compare_official_preloader_payloads.py OLDER_AMAZON_OTA_URL NEWER_AMAZON_OTA_URL
+python3 scripts/compare_official_boot_copies.py AMAZON_CRUMPET_OTA_URL
 python3 scripts/audit_da_stage2.py /path/to/mtkclient/mtkclient/Loader
 python3 scripts/audit_preloader_emi.py /path/to/local-crumpet-preloader.bin
 python3 -m unittest discover -s tests -v
