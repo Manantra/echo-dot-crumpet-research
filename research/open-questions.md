@@ -1,11 +1,12 @@
 # Open questions
 
 1. **Partly resolved:** official 2025 Crumpet OTAs supply full `brhgptpl_*` images with the **2023 build string `20231103_072325`**. Their image hashes differ from the community-device dump SHA-256 `d0d43eea2d5d52835007e375a3214fa4c6bf1a7c319e52ab442b7567e318992b`. Determine if this comes from formatting, per-device differences, or other content before claiming identity.
-2. Establish the correct NAND-to-memory mapping and execution entry points of the 2019 image.
-3. Compare overlap, anti-rollback and DA verification routines in the *actual machine code* of the **available 2019 and 2021 binaries**, then compare with 2023 if obtained.
+2. **Partly resolved:** entry-point mapping validated from the `FILE_INFO` load address and ARM branch of the stored images. Independently establish live relocation/runtime execution layout, particularly for the 2019 NAND excerpt.
+3. **Partly resolved:** 2022-vs-2023-built memory-range checks have been disassembled with cross-references to the logged diagnostics and loader call sites ([analysis](../docs/arm-range-check-analysis.md)). Next: determine full call-chain order relative to TEE verification, compare 2019, and inspect anti-rollback/DA-verification routines at validated addresses.
 4. **Resolved (2026-10-08):** Official September 2021 OTA contains four `brhgptpl_*` preloader entries, all extracted and SHA-256 verified. See [results](../docs/ota-2021-analysis.md). Next: carefully map 2021 image addresses and compare functions against 2019.
 5. Explain the BROM/MTKClient DA stage 2 failure without writing anything.
 6. Investigate why upstream Crumpet specifies `expdb` where a logged partition table lacks it.
 7. Determine whether a raw-NAND-specific TWRP port is possible and recoverable.
+8. Verify whether the updated overlap guard actually rejects the malformed-header condition assumed in the public exploit; do not equate a changed routine with proof of a security fix.
 
 No destructive testing without a validated recovery mechanism.
