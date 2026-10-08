@@ -1,0 +1,13 @@
+# Proprietary dumps and local data
+*.bin
+*.img
+*.elf
+*.dump
+*.zip
+*.7z
+*.tar
+*.tar.gz
+__pycache__/
+*.pyc
+.env
+.DS_Store
