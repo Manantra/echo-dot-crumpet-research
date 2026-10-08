@@ -2,6 +2,9 @@
 
 - [R0rt1z2/amonet-koboreru](https://github.com/R0rt1z2/amonet-koboreru) — exploit source, **untested** Crumpet support.
 - [Crumpet patch source](https://github.com/R0rt1z2/amonet-koboreru/blob/main/devices/crumpet.c).
+- [CRC-verified Crumpet NAND/GPT and four boot-copy header research](../docs/crumpet-nand-gpt-2019-2025.md) — exact 2019–2025 partition ranges, media header structures, GUID/CRC delta classification.
+- [MediaTek BootROM NAND/GFH and BRLYT header definitions in U-Boot](https://android.googlesource.com/platform/external/u-boot/+/refs/tags/aml_tz2_305400300/tools/mtk_image.h) — primary open-source struct specification.
+- [Public 2019 Crumpet boot partition log](https://github.com/jvandewiel/no-alexa/blob/main/logicanalyzer/uart_logs/uart_normal_oldsw.txt) — independent 4096-byte logical block size and partition names.
 - [Latest catalogued Crumpet Nov-2025 LK/Preloader comparison](../docs/latest-2025-ota-boot-payload-comparison.md) — four manifest-verified 2025 preloader GFH images are byte-identical, despite varying NAND prefix, and Nov-2025's four boot copies share the GFH image.
 - [FTVDB Crumpet official OTA index through Nov-2025](https://ftvdb.com/echo/firmware/com.amazon.crumpet.android.os/) — official OTA URLs and listed publication dates.
 - [Independent MT6739 DA Stage-2 timeout](https://github.com/bkerler/mtkclient/issues/26) — BROM, Kamakiri, DA patching and accepted EMI but same generic Stage-2 timeout, NOT a proven Crumpet exploit.
