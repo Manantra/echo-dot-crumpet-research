@@ -2,6 +2,11 @@
 
 - [R0rt1z2/amonet-koboreru](https://github.com/R0rt1z2/amonet-koboreru) — exploit source, **untested** Crumpet support.
 - [Crumpet patch source](https://github.com/R0rt1z2/amonet-koboreru/blob/main/devices/crumpet.c).
+- [Crumpet root/unlock feasibility and hardware evidence assessment 2026-10-09](../docs/crumpet-root-unlock-feasibility-2026-10-09.md) — BROM reports, 2019 pointer and 2019–2025 security metadata, NAND recovery and safe validation bar.
+- [Read-only 2019 TEE pointer literal collisions](../scripts/audit_2019_amonet_string_pointer_collisions.py) — checks expected source header values inside two original ASCII strings in SHA-pinned archive.
+- [Preloader GFH security metadata comparator](../scripts/audit_crumpet_preloader_gfh_security.py) — reports byte-identical BROM/anti-clone/security GFH records with no antirollback inference.
+- [Macronix MX30LF4G28AD datasheet](https://www.macronix.com/Lists/Datasheet/Attachments/8864/MX30LF4G28AD%2C%203V%2C%204Gb%2C%20v1.3.pdf) and [public 2019 Crumpet UART page and bad-block data](https://github.com/jvandewiel/no-alexa/wiki/UART-logs) — 4096+256 page, 2048 blocks, historical BBT locations.
+- [Independent Crumpet unsupported model declaration](https://github.com/adenta/echo-dot-codex) — explicitly excludes C78MP8 despite supporting older donut; unverified different device release.
 - [Crumpet Amonet `PART_GET_ADDR` Thumb-2 middle-halfword proof](../docs/crumpet-amonet-part-get-thumb2-misalignment.md) — pinned device C header and official 2021/2022/2025 raw boot images.
 - [Crumpet MT8167 TWRP source tree](https://github.com/R0rt1z2/twrp_device_amazon_echo-mt8167) and [source/NAND audit](../docs/crumpet-twrp-emmc-vs-nand-audit.md) — published source is not a boot-tested raw-NAND recovery implementation.
 - [Crumpet Amonet nonreturning USBDL / missing `expdb` GPT / donor-image blocker](../docs/amonet-crumpet-unreachable-lk-and-expdb.md) — pinned upstream original C control flow and two independently CRC-verified Crumpet GPTs.
