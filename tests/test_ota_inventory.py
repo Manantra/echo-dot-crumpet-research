@@ -29,7 +29,7 @@ def field(number, value):
     return vi((number << 3) | 2) + vi(len(value)) + value
 
 
-def fixture(path, damage=False):
+def fixture(path, damage=False, name="brhgptpl_0"):
     raw = (b"BOOTLOADER! test 20210326_040236 test "
            b"check_part_overlapped done").ljust(4096, b"\x00")
     compressed = lzma.compress(raw)
@@ -37,7 +37,7 @@ def fixture(path, damage=False):
     op = (field(1, 8) + field(2, 0) + field(3, len(compressed)) +
           field(6, extent) + field(8, hashlib.sha256(compressed).digest()))
     partition_info = field(1, len(raw)) + field(2, hashlib.sha256(raw).digest())
-    partition = field(1, b"brhgptpl_0") + field(7, partition_info) + field(8, op)
+    partition = field(1, name.encode("ascii")) + field(7, partition_info) + field(8, op)
     manifest = field(3, 4096) + field(13, partition)
     payload = (b"CrAU" + struct.pack(">QQI", 2, len(manifest), 0) +
                manifest + compressed)
