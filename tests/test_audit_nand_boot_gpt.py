@@ -91,7 +91,7 @@ class NandGptTests(unittest.TestCase):
     def test_partition_geometry_change_is_not_classed_as_guid(self):
         a = synthetic_nand()
         b = bytearray(a)
-        struct.pack_into("<Q", b, 0x4000 + 32, 0x456)
+        struct.pack_into("<Q", b, 0x4000 + 32, 1)
         update_crc(b)
         categories = classify_differences(a, bytes(b))
         self.assertGreater(categories["other"], 0)
