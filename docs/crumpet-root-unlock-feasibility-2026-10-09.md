@@ -124,7 +124,15 @@ Redact any serial numbers or hardware identifiers from logs before sharing. **Do
 
 **Interpretation:** `0e8d:0003` would confirm **BROM enumeration only**, not Kamakiri success, DA Stage-2, unlocked bootloader or Linux root. `0e8d:2000` means the Preloader USB interface, not the ROM exploit. An absence of BROM USB is not proof that all board revisions are unexploitable.
 
-## 7. Safe evidence needed to establish a real root/unlock breakthrough
+## 7. Newly confirmed 2026-10-09 DA2 NAND-chip record and host USB diagnostics
+
+[Detailed direct DA2 binary and XFLASH transport report](mtkclient-stage2-nand-profile-transport.md) confirms the default `MTK_DA_V5.bin` for MT8167 contains a **real NAND-device table entry** pointing to `MX30LF4G28AD` with the historical Crumpet chip ID `C2 DC 90 A2 57 03`, 4096 main/page and 256 OOB/page. The alternative bundled AllInOne agent has no *exact* matching record. The assertion that the stock V5 DA2 lacks a definition for historical Crumpet NAND is therefore contradicted by source bytes; functional NAND access remains untested.
+
+The upstream Python host `boot_to(timeout=0.5)` parameter is a **sleep before status**, not a USB-read timeout. A missing or truncated **12-byte status header** can throw `struct.error` and create the generic `Stage was't executed. Maybe dram issue ?.` message. The host can only reconnect to Stage-2 USB *after* its initial `boot_to` reports success; re-enumeration on real Crumpet is a **hypothesis**, not an observation. `send_data` also has an unbounded loop on repeated USB write failures. Two read-only checks [DA2 lookup profile](../scripts/audit_da2_crumpet_nand_profile.py) and [XFLASH host-path audit](../scripts/audit_xflash_stage2_transport.py) provide reproducible evidence.
+
+**Consequent next investigation:** differentiate DA2 execution vs USB status transport using pre-existing redacted host logs and USB device-event timing, rather than assuming the NAND device is unknown or flashing a different DA.
+
+## 8. Safe evidence needed to establish a real root/unlock breakthrough
 
 We can now state a precise and falsifiable validation bar instead of generic "root coming soon":
 
