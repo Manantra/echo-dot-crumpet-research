@@ -19,6 +19,11 @@
 | 2019→2023 byte-level comparison | Public 2019 excerpt + official OTA image bearing the 2023 build | Byte spans matched; complete function-level correspondence outstanding |
 | Runtime patch-address mapping | `FILE_INFO` load address and ARM entry matched on OTA images | **Stored-file VMA mapping corroborated**, live runtime relocation and exploit patch addresses still unverified |
 | TWRP for raw NAND Crumpet | Existing shared device tree | Not demonstrated |
+| Amazon vendor unlock code path in LK | 2025 official OTA `lk` image, manifest-verified SHA-256 `c4e87b94...`, and older fastboot logs | **Vendor certificate/one-time unlock strings confirmed**, no accepted certificate or working unlock known |
+| Physical raw-NAND recovery research | no-alexa chip readout plus independently published PRBS-15 and BCH decoder | **Decode tooling exists**; writing/restoring and boot verification not demonstrated |
+| Crumpet BROM + Kamakiri | Third-party reports in upstream issue #2 | Access on some devices; DA stage 2 fails and no proven partition write/recovery |
+
+**No currently validated Crumpet root/unlock path** as of 2026-10-08; see [research feasibility assessment](docs/root-unlock-feasibility-2026-10-08.md) for independent community confirmation, certified-LK findings, BROM limits and recovery prerequisites.
 
 See [verified 2021–2025 preloader timeline](docs/verified-preloader-timeline.md), [verified 2021 OTA analysis](docs/ota-2021-analysis.md) (nine partitions, four preloader images, hashes) and [read-only reproduction script](scripts/ota_inventory.py). Nineteen synthetic tests pass locally (with optional Capstone installed); all examined OTA preloader partition hashes matched their manifests. See [ARM disassembly findings](docs/arm-range-check-analysis.md), [signature/load ordering](docs/tee-load-signature-order.md), [TEE header address processing](docs/tee-header-address-processing.md), and [SRAM target intersection](docs/sram-guard-exploit-intersection.md).
 
