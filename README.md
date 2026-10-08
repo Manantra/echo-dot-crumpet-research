@@ -10,6 +10,8 @@ Public, community-oriented **read-only reverse-engineering research** for the Am
 - Public [Crumpet UART logs](https://github.com/jvandewiel/no-alexa/tree/main/logicanalyzer/uart_logs) cover 2019 and 2021 preloaders.
 - A [2019 raw-NAND excerpt](https://github.com/jvandewiel/no-alexa/blob/main/dumped_files/brhgptpl_0.bin) is available. Whole-file SHA-256: `e51970de327ec58ba32ee506b7b1358ff7877e43672be833f5d6a7c2b2a68637`.
 - **New (2026-10-08):** We verified and extracted **four March 2021 Crumpet preloader images** from Amazon's Fire OS 6.5.4.8 OTA, with their SHA-256 checksums validated against the official update manifest. [Full analysis](docs/ota-2021-analysis.md).
+- **Further verified Crumpet Amonet blocker (2026-10-09):** `PART_GET_ADDR=0x20F250` points **inside a 32-bit Thumb-2 instruction** (second halfword) in independently manifest-hash-verified official **2022 and Nov-2025** preloader images. In 2021 it lands at an instruction boundary but **not at an established function entry**. [Exact byte/instruction evidence](docs/crumpet-amonet-part-get-thumb2-misalignment.md). This makes the hardcoded function-pointer assumptions substantially less credible without a live RAM map.
+- **New 2026 Crumpet TWRP device tree reviewed:** a Crumpet target and prebuilt ARM kernel exist, but shared recovery fstab and init use **eMMC-specific paths**. Five by-name labels are absent from the verified *early NAND GPT*, no built `recovery.img` or successful Crumpet TWRP boot log was established. [Read-only compatibility audit](docs/crumpet-twrp-emmc-vs-nand-audit.md).
 - **New, source-proven Crumpet amonet port blockers (2026-10-09):** `enter_usbdl(0)` unconditionally enters a nonreturning USB handshake on Crumpet *before* LK loading (key and cable detection both compile to `true`). Additionally, `LK_PART_NAME "expdb"` is **absent from the CRC-validated Crumpet GPT** in 2019 and November 2025; the source distribution has no `tee_crumpet.img` donor. Even a theoretically executing payload **is not a complete persistent-root boot implementation**. [Source and GPT evidence](docs/amonet-crumpet-unreachable-lk-and-expdb.md).
 - **New ARM bootstrap evidence (2026-10-09):** Four genuine 2019/2021/2022/2025 Crumpet preloaders share exactly the same ARM BSS-zeroing and indirect ARM→Thumb handoff instructions. Their embedded SRAM bounds, control-slot pointers, and Thumb continuation destinations differ. A new opcode-validated [bootstrap audit](docs/crumpet-arm-bootstrap-memory-map.md) substantially strengthens the stored-file/VMA mapping, **without proving actual runtime relocation** or any root method.
 - **New Crumpet amonet patch-site validation warning:** All five upstream hardcoded RAM-patch addresses were mapped into **2019, 2021, 2022, 2024 and 2025** preloader files. At least one supposed function (`0x217F2C`) maps **inside a USB ASCII diagnostic in the 2019 image**, and other sites change meaning across versions. The upstream patcher writes directly to the given RAM address, without version-based remapping; live RAM relocation remains unverified. [Full byte-by-byte audit](docs/amonet-hardcoded-patch-address-audit.md). **Do not try these constants on a device.**
@@ -31,6 +33,8 @@ Public, community-oriented **read-only reverse-engineering research** for the Am
 ## Where to start
 
 - [Research status and evidence levels](STATUS.md)
+- **[Amonet Crumpet `part_get` function pointer enters middle of Thumb-2 instruction on 2022/2025 firmware](docs/crumpet-amonet-part-get-thumb2-misalignment.md)**
+- **[Crumpet TWRP storage audit: shared eMMC paths vs Raw NAND partition names](docs/crumpet-twrp-emmc-vs-nand-audit.md)**
 - **[Amonet Crumpet source-level boot dead end, missing GPT `expdb` and absent donor image](docs/amonet-crumpet-unreachable-lk-and-expdb.md)**
 - **[Crumpet ARM bootstrap: directly decoded BSS clear and Thumb handoff across 2019–2025](docs/crumpet-arm-bootstrap-memory-map.md)**
 - **[Published Crumpet amonet hardcoded patch-site audit against 5 verified preloaders](docs/amonet-hardcoded-patch-address-audit.md)**
@@ -92,6 +96,10 @@ python3 scripts/audit_amonet_patch_sites.py /path/to/amonet/amonet/devices/crump
 python3 scripts/audit_preloader_bootstrap.py /path/to/preloader.bin
 # Validate Amonet source boot path and actual Crumpet NAND GPT names, read-only
 python3 scripts/audit_amonet_crumpet_boot_flow.py /path/to/amonet-koboreru/amonet --official-ota AMAZON_CRUMPET_OTA_URL
+# Offline validation of Crumpet Amonet part_get Thumb entry (requires Capstone)
+python3 scripts/audit_crumpet_amonet_part_get_entry.py /path/to/amonet/amonet/include/devices/crumpet.h /path/to/verified/preloader-2025.bin
+# Cross-check public TWRP source fstab with early NAND GPT (read-only)
+python3 scripts/audit_crumpet_twrp_storage.py /path/to/twrp_device_amazon_echo-mt8167 --official-ota AMAZON_CRUMPET_OTA_URL
 python3 scripts/audit_da_stage2.py /path/to/mtkclient/mtkclient/Loader
 python3 scripts/audit_preloader_emi.py /path/to/local-crumpet-preloader.bin
 python3 -m unittest discover -s tests -v
