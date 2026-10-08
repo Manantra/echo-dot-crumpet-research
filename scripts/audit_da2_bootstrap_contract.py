@@ -207,7 +207,7 @@ def verify_binary(e, directory):
         # Alternative send wrapper materializes 0xFEEEEEEF using MOVW/MOVT.
         expect(da2, send_ptr-1+2, "movw", "r3, #0xeeef")
         expect(da2, send_ptr-1+0x12, "movt", "r3, #0xfeee")
-        expect(da2, send_ptr-1+0x24, "movs", "r1, #0xc")
+        expect(da2, send_ptr-1+0x22, "movs", "r1, #0xc")
     return {
         "loader": e["filename"],
         "da1_argument_magic_offset": hex(profile["da1_magic"]),
