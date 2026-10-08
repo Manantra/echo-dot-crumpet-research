@@ -2,6 +2,9 @@
 
 - [R0rt1z2/amonet-koboreru](https://github.com/R0rt1z2/amonet-koboreru) — exploit source, **untested** Crumpet support.
 - [Crumpet patch source](https://github.com/R0rt1z2/amonet-koboreru/blob/main/devices/crumpet.c).
+- [Exact historical Crumpet NAND lookup record in V5 MT8167 DA2, Stage-2 transport study](../docs/mtkclient-stage2-nand-profile-transport.md) — SHA-pinned stock MTKClient DA binaries and original XFLASH/USB host code, no execution.
+- [Read-only DA2 Macronix profile validator](../scripts/audit_da2_crumpet_nand_profile.py) — detects exact model RAM pointer, chip ID and page/OOB data in the original pinned binary.
+- [Read-only MTKClient Stage2 USB AST/packet-audit utility](../scripts/audit_xflash_stage2_transport.py) — distinguishes missing status frame, explicit status error, failure to write and delayed USB reconnect.
 - [Crumpet root/unlock feasibility and hardware evidence assessment 2026-10-09](../docs/crumpet-root-unlock-feasibility-2026-10-09.md) — BROM reports, 2019 pointer and 2019–2025 security metadata, NAND recovery and safe validation bar.
 - [Read-only 2019 TEE pointer literal collisions](../scripts/audit_2019_amonet_string_pointer_collisions.py) — checks expected source header values inside two original ASCII strings in SHA-pinned archive.
 - [Preloader GFH security metadata comparator](../scripts/audit_crumpet_preloader_gfh_security.py) — reports byte-identical BROM/anti-clone/security GFH records with no antirollback inference.
