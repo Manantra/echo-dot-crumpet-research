@@ -23,6 +23,8 @@ from disassemble_preloader import address_to_offset, locate_image
 # including branch/BL instruction boundaries, on *these specific image hashes*.
 # New firmware hashes require separately proving the anchor; fail closed.
 KNOWN = {
+    "e51970de327ec58ba32ee506b7b1358ff7877e43672be833f5d6a7c2b2a68637":
+        ("public-2019-archive", 0x20F248, bytes.fromhex("9c4200f0")),
     "a5b30bff5dc20e7f426e45197b77f175a6d986ecb9329c6e96767b21a04cd2a5":
         ("official-2021", 0x20F248, bytes.fromhex("06f012fb")),
     "990cfcfa861c96e4bec53da32347b14b9cf44847f84f188c226cea820532083d":
@@ -99,7 +101,7 @@ def main():
     ap.add_argument("upstream_crumpet_header", type=Path,
                     help="Original local amonet include/devices/crumpet.h")
     ap.add_argument("preloader_images", type=Path, nargs="+",
-                    help="Local verified, unchanged official Crumpet boot partitions")
+                    help="Local verified, unchanged archived or official Crumpet boot partitions")
     args = ap.parse_args()
     header = args.upstream_crumpet_header.read_text(encoding="utf-8")
     for file in args.preloader_images:
