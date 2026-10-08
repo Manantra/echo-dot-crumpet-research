@@ -17,7 +17,7 @@ GET_HW_SW_VER response (four big-endian 16-bit fields):
 
 The exact structure agrees with [MTKClient `mtk_preloader.get_hw_sw_ver()`](https://github.com/bkerler/mtkclient/blob/cd25cf9/mtkclient/Library/mtk_preloader.py#L928-L931), which sends `GET_HW_SW_VER` and unpacks the eight returned bytes using `>HHHH`.
 
-Meanwhile, the only **two** `HW 0x8167` records found in the checked-out MITKClient `mtkclient/Loader` folder (source commit `cd25cf9`) are:
+Meanwhile, the only **two** `HW 0x8167` records found in the checked-out MTKClient `mtkclient/Loader` folder (source commit `cd25cf9`) are:
 
 | Property | Reported real Crumpet | MTK_DA_V5.bin | MTK_AllInOne_DA_mt6590.bin |
 |---|---|---|---|
@@ -55,7 +55,7 @@ python3 scripts/audit_mtkclient_da_metadata.py \
 
 The output marks the chosen record and explicitly identifies any non-exact revision tuple. No binaries are uploaded or executed.
 
-## 3. Strong *negative* evidence: another HW 0xCB00 / SW 1 MT8167 runs the SAME DA
+## 3. Strong *negative* evidence: another HW 0xCB00 / SW 1 MT8167 boots a DA with the same filename
 
 An independent MTKClient trace in [bkerler/mtkclient issue #9, opened 2026-01-20](https://github.com/bkerler/mtkclient/issues/9) is from a **Pexar 2K digital picture frame**, not a Crumpet. It reports:
 
@@ -72,9 +72,9 @@ DAXFlash - EMMC USER Size: ...
 DAXFlash - DA Extensions successfully added at 0x4fff0000
 ```
 
-The later user command was stuck at `Main - Handling da commands ...` and its intended bootloader unlock did **not** complete. But the trace **independently demonstrates that MTKClient has run `MTK_DA_V5.bin` through a successful DA2 handshake on a device advertising exactly the same HW/sub/SW revisions as the reported Crumpet.**
+The later user command was stuck at `Main - Handling da commands ...` and its intended bootloader unlock did **not** complete. But the trace **independently demonstrates that MTKClient has run `MTK_DA_V5.bin` through a successful DA2 handshake on a device advertising exactly the same HW/sub/SW revisions as the reported Crumpet.** The Pexar report does not provide its DA binary's full SHA-256, so bit-for-bit identity with our MTKClient checkout cannot be established.
 
-Therefore the claim `"all MT8167 0xCB00/SW1 devices cannot run a DA marked 0xCA00/SW0"` is directly contradicted by an actual independent device log.
+Therefore the claim `"all MT8167 0xCB00/SW1 devices must fail when MTKClient selects MTK_DA_V5.bin"` is directly contradicted by an actual independent device log.
 
 ### What is different from the failing Crumpet reports?
 
@@ -92,7 +92,7 @@ Therefore the claim `"all MT8167 0xCB00/SW1 devices cannot run a DA marked 0xCA0
 - A simple older-DA-metadata rejection is **not enough** to explain the Crumpet-specific failure.
 - The **different handoff mode/EMI path** is a stronger, evidence-based distinction to investigate.
 - Raw NAND **may** matter to the DA's driver after Stage 2, but on Crumpet the failure is earlier, before NAND-info enumeration. Do not identify NAND itself as the cause.
-- One successful unrelated MT8167 device does not prove that the same DA binary will run on Crumpet. Actual RAM timing, board revision, secure state, and USB endpoint behavior still matter.
+- One successful unrelated MT8167 device does not prove that the same-named DA binary has identical bytes or will run on Crumpet. Actual RAM timing, board revision, secure state, and USB endpoint behavior still matter.
 
 ## 4. Specific next non-destructive work
 
