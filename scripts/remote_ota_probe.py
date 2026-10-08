@@ -1,8 +1,8 @@
 #!/usr/bin/env python3
-"""Inspect preloader hashes directly from an official Amazon Crumpet OTA over HTTPS.
+"""Inspect hashes of Crumpet preloader and optionally LK via official Amazon OTA HTTPS.
 
 Uses HTTP Range to retrieve only the ZIP/payload manifest and compressed
-brhgptpl_* operations (often <500 KiB total). No images are written to disk,
+brhgptpl_* (and optionally LK) operations. No images are written to disk,
 and no hardware is accessed. Manifest hashes are checked, not the OTA signature.
 """
 import argparse
@@ -35,7 +35,7 @@ def fetch_range(url, start, end):
     return result
 
 
-def probe(url):
+def probe(url, include_lk=False):
     parsed = urlparse(url)
     if parsed.scheme != "https" or parsed.hostname != CDN_HOST:
         raise ValueError(f"Only official Amazon CDN HTTPS URLs ({CDN_HOST}) accepted")
@@ -64,22 +64,22 @@ def probe(url):
     findings = []
     for partition in parts:
         name = ota.first(partition, 1).decode()
-        if not name.startswith("brhgptpl_"):
+        if not name.startswith("brhgptpl_") and not (include_lk and name == "lk"):
             continue
         info = ota.first(partition, 7)
         expected_size = ota.first(info, 1)
         expected_hash = ota.first(info, 2)
         operations = ota.values(partition, 8)
         if len(operations) != 1:
-            raise ValueError(f"Expected one preloader operation for {name}")
+            raise ValueError(f"Expected one partition operation for {name}")
         operation = operations[0]
         kind, relative, length = (ota.first(operation, n) for n in (1, 2, 3))
         if kind != 8 or not isinstance(length, int) or length > MAX_OP_SIZE:
-            raise ValueError(f"Unsupported preloader compression for {name}")
+            raise ValueError(f"Unsupported partition compression for {name}")
         extents = ota.values(operation, 6)
         if (len(extents) != 1 or ota.first(extents[0], 1) != 0 or
                 ota.first(extents[0], 2) * block_size != expected_size):
-            raise ValueError(f"Unsupported preloader destination layout for {name}")
+            raise ValueError(f"Unsupported partition destination layout for {name}")
         blob = fetch_range(url, blob_base + relative,
                            blob_base + relative + length - 1)
         if hashlib.sha256(blob).digest() != ota.first(operation, 8):
@@ -91,8 +91,15 @@ def probe(url):
         marker = raw.find(b"check_part_overlapped done")
         row = (name, expected_size, expected_hash.hex(), builds, marker)
         findings.append(row)
-        print(f"VERIFIED {name}: SHA-256={row[2]} build={builds} "
-              f"overlap_string={'missing' if marker < 0 else hex(marker)}")
+        if name == "lk":
+            tokens = (b"flash:unlock", b"flash:otucert",
+                      b"flash:otucode", b"amzn_verify_onetime_unlock_code",
+                      b"the command you input is restricted on locked hw")
+            summary = ",".join(f"{t.decode()}={t in raw}" for t in tokens)
+            print(f"VERIFIED LK: SHA-256={row[2]} build={builds} {summary}")
+        else:
+            print(f"VERIFIED {name}: SHA-256={row[2]} build={builds} "
+                  f"overlap_string={'missing' if marker < 0 else hex(marker)}")
     print("No images saved. OTA package signature was NOT independently verified.")
     return findings
 
@@ -100,8 +107,10 @@ def probe(url):
 def main():
     p = argparse.ArgumentParser(description=__doc__)
     p.add_argument("url", help=f"Official HTTPS URL on {CDN_HOST}")
+    p.add_argument("--include-lk", action="store_true",
+                   help="Also retrieve and verify the LK image in memory; no output firmware files")
     args = p.parse_args()
-    probe(args.url)
+    probe(args.url, include_lk=args.include_lk)
 
 
 if __name__ == "__main__":
