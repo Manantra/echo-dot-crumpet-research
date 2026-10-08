@@ -74,7 +74,7 @@ There is a **second** independently decoded call to the same guard at `0x20F68E`
 
 The new guard `0x20F1A0` takes a **candidate address and length**, invokes `0x20E3D8` for text- and BSS-region comparisons, and returns a result used at both call sites. It **does not compare the image-name string** in this wrapper. This means changing the header name cannot simply select the old name-table early-return path *within this new guard*. Other checks or paths could still depend on the name.
 
-Crucially, the guard explicitly checks against the preloader's protected **text/BSS ranges**; this alone does **not** establish that every other SRAM address is protected. Testing the exploit's address/length edge cases would require further exact header-value tracing and a reliable model of all additional checks and relevant memory maps.
+Crucially, the guard explicitly checks against the preloader's protected **text/BSS ranges**; the [subsequent static memory-map audit](sram-guard-exploit-intersection.md) confirms that the published payload's block-device target `0x001086EC` is within the protected BSS range `[0x00102180,0x00109DAC)`. This does **not** establish that every possible alternative SRAM target is protected. Testing the exploit's address/length edge cases would require further exact header-value tracing and a reliable model of all additional checks and relevant memory maps.
 
 ### 2024 vs 2025 OTA images
 
@@ -92,7 +92,7 @@ The instruction bytes in the top-level TEE loader (`0x20DF40` region), image-loa
 **NOT established:**
 - Whether the first `0x20210C` call reads only header bytes in every path or can be influenced to read other content; the ordering and function calls are verified, but every argument and length has not been independently proven.
 - Whether crafted address `0xFFFFFFFF` falls back to zero in the new implementation or how all size and address arithmetic behaves in corner cases.
-- Whether the guard blocks the specific SRAM device-structure overwrite used in the published exploit.
+- **Partly resolved:** the guard's encoded BSS interval contains the exact block-device target used in the published exploit. We still need to establish how malicious header values are translated before the guard receives its effective address/length; see [SRAM audit](sram-guard-exploit-intersection.md).
 - Whether the TEE/ATF signature is validated over all header fields.
 - Whether BROM/DA, anti-rollback or raw-NAND write permissions permit safe use of *any* exploit.
 - That the official OTA image with a 2023 build string exactly matches a community device dump.
