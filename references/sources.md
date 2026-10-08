@@ -13,6 +13,10 @@
 - [Upstream payload generator](https://github.com/R0rt1z2/amonet-koboreru/blob/main/create_tee_image.py) — exact Crumpet payload size calculation.
 - [Verified 2021–2025 Crumpet preloader timeline](../docs/verified-preloader-timeline.md) — source URLs, build strings, hashes, and binary comparisons.
 - [September 2021 Crumpet OTA — our verified analysis](../docs/ota-2021-analysis.md) — OTA manifest, all four preloader SHA-256s and non-destructive reproduction.
+- [October 2026 Crumpet research assessment](../docs/root-unlock-feasibility-2026-10-08.md) — independent community report, verified LK certificate-related strings, BROM limitations, NAND recovery research.
+- [Crumpet Fastboot research wiki](https://github.com/jvandewiel/no-alexa/wiki/Fastboot) — locked fastboot response and one-time unlock certificate failure.
+- [Crumpet NAND dumping and decoding wiki](https://github.com/jvandewiel/no-alexa/wiki/Decoding-NAND-flash) — BCH/PRBS details.
+- [mtk-nand-utils (external, GPL/AGPL)](https://github.com/gilderchuck/mtk-nand-utils) — published NAND raw flash decode utilities.
 - [Android update-engine manifest schema](https://android.googlesource.com/platform/system/update_engine/+/HEAD/update_metadata.proto) — public protobuf field specifications.
 
 Do not upload copyrighted firmware, secrets or private device identifiers.
