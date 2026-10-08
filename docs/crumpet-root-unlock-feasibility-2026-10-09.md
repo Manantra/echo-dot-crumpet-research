@@ -132,6 +132,10 @@ The upstream Python host `boot_to(timeout=0.5)` parameter is a **sleep before st
 
 **Consequent next investigation:** differentiate DA2 execution vs USB status transport using pre-existing redacted host logs and USB device-event timing, rather than assuming the NAND device is unknown or flashing a different DA.
 
+## New Stage-2 root-research narrowing (2026-10-09): DA1 runtime argument magic
+
+The [complete pinned DA1→DA2 R0/magic/SYNC instruction contract](mt8167-da2-bootstrap-r0-magic-sync.md) shows DA2 receives a live parameter pointer in CPU register `R0`, saves it at `0x40000020`, then copies a DA-specific 88-byte or 64-byte parameter struct into BSS. `bootstrap2` checks magic `0xFE4A4D42`, **deliberately infinite-loops if absent**, and only later notifies the host via a properly framed XFLASH `SYNC`. This is a concrete, previously missing possible Stage-2 timeout mechanism even when DA2 entry code is reached. No actual Crumpet R0/memory/USB trace has confirmed this diagnosis. Do not upload alternative DA2 images or cross-pair the DA binaries based solely on this finding.
+
 ## 8. Safe evidence needed to establish a real root/unlock breakthrough
 
 We can now state a precise and falsifiable validation bar instead of generic "root coming soon":
