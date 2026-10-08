@@ -39,9 +39,23 @@ def inspect_region(data, region):
         raise ValueError("DA initial ARM branch points outside stage code")
     counts = {label: sum(body.count(marker) for marker in needles)
               for label, needles in MARKERS.items()}
+    # MTKClient's bundled MT8167 DA2 binaries use an ARM32 loop at 0xD4
+    # to clear BSS from the literal pair located at file +0x11C/+0x120.
+    # This is only applied if the literal-load and store-loop opcodes
+    # match that exact validated prologue. No ARM code is executed.
+    bss = None
+    if (len(body) >= 0x124 and
+            struct.unpack_from("<I", body, 0xD4)[0] == 0xE59F0040 and
+            struct.unpack_from("<I", body, 0xD8)[0] == 0xE59F1040 and
+            struct.unpack_from("<I", body, 0xE0)[0] == 0xE1500001 and
+            struct.unpack_from("<I", body, 0xE4)[0] == 0xB4802004):
+        bss_start, bss_end = struct.unpack_from("<II", body, 0x11C)
+        if region["address"] <= bss_start <= bss_end:
+            bss = (bss_start, bss_end)
     return {
         "entry": target, "region_sha256": hashlib.sha256(raw).hexdigest(),
         "effective_len": len(body), "markers": counts, "prefix": body[:256],
+        "bss_interval": bss,
     }
 
 
@@ -74,6 +88,10 @@ def main():
             print(f"  {stage}: ARM-entry={r['entry']:#010x}, "
                   f"body={r['effective_len']} bytes, SHA256={r['region_sha256']}")
             print("   marker counts:", r["markers"])
+            if r["bss_interval"] is not None:
+                start, end = r["bss_interval"]
+                print(f"   decoded zero-initialized BSS: [{start:#010x}, {end:#010x}),"
+                      f" {end-start:#x} bytes")
     if len(results) == 2:
         a, b = (r["stage2"]["prefix"] for r in results)
         prefix_len = next((i for i, (x, y) in enumerate(zip(a, b)) if x != y),
