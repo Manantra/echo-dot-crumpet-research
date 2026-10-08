@@ -25,7 +25,7 @@ def fake_arm_loader(path, stage2_bytes=0x300, nand=True):
         struct.pack_into("<I", raw, 0x400 + offset, word)
     if nand:
         raw[0x430:0x436] = b"[BMT]\x00"
-        raw[0x440:0x44A] = b"device_nand"
+        raw[0x440:0x44B] = b"device_nand"
     path.write_bytes(raw)
 
 
