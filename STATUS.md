@@ -9,7 +9,7 @@
 | Preloader 2021: `20210326_040236` | Original official OTA extracted; per-image SHA-256 verified against payload manifest | **Confirmed binary evidence** |
 | Preloader 2023: `20231103_072325` | Real official 2025 OTA images with this build string; hashes verified against payload | **Build verified**; exact reported device-dump hash is different |
 | BROM/Kamakiri on some Crumpets | User reports | Reported, not a root method |
-| Download Agent stage 2 | User reports | Fails on tested devices |
+| Download Agent stage 2 | Community failures plus MTKClient XFLASH code at pinned commit `cd25cf9` | **Timeout after acknowledged DA transfer**; `DRAM setup passed` is not a DRAM stress test; exact failure cause unproven |
 | Crumpet amonet-koboreru port | Author statement | Not tested on actual device |
 | 2019→2021 binary comparison | Both source binaries available | Initial byte-level comparison performed; function-level comparison outstanding |
 | 2022→2023-build range checking | ARM Thumb disassembly and PC-relative string xrefs | **Confirmed rewrite:** old `0x20F0C0` vs new `0x20F1A0` plus overlap helper `0x20E3D8` |
@@ -22,11 +22,15 @@
 | Amazon vendor unlock code path in LK | Official OTA LK images from 2021, 2022, 2023, 2024, 2025, all manifest-SHA-256 verified; 2024/2025 LK direct ARM/Thumb call graph | **Generic `flash:` dispatch and certificate-gated `unlock` verifier confirmed; no accepted cert or working production unlock known** |
 | Physical raw-NAND recovery research | no-alexa chip readout plus independently published PRBS-15 and BCH decoder | **Decode tooling exists**; writing/restoring and boot verification not demonstrated |
 | Crumpet BROM + Kamakiri | Third-party reports in upstream issue #2 | Access on some devices; DA stage 2 fails and no proven partition write/recovery |
+| Two MT8167 DA variants and selection | Parsed official MTKClient bundled `MTK_DA_V5.bin` and `MTK_AllInOne_DA_mt6590.bin` metadata | **Both have HW 0x8167, differing DA2 sizes, same `0x40000000` load address.** Default order/duplicate filtering hides second entry; neither demonstrated functional on Crumpet |
+| MTKClient DA duplicate-subcode logic | Inspected `daconfig.py` at `cd25cf9` | **Tautological comparison `da.hw_sub_code == da.hw_sub_code`**; unrelated to whether a DA actually runs |
 
 **No currently validated Crumpet root/unlock path** as of 2026-10-08; see [research feasibility assessment](docs/root-unlock-feasibility-2026-10-08.md) for independent community confirmation, certified-LK findings, BROM limits and recovery prerequisites.
 
+**New:** [MT8167 MTKClient DA failure investigation](docs/mtkclient-da-stage2-analysis.md): XFLASH supports NAND detection after Stage-2, but its auto-EMI lookup is eMMC-CID-centric and the observed Stage-2 failure is an unclassified response exception. [Read-only log classifier](scripts/classify_mtkclient_stage2.py) and [DA metadata auditor](scripts/audit_mtkclient_da_metadata.py) are included.
+
 **New:** [2021–2025 LK image version matrix](docs/lk-image-timeline.md) and [vendor unlock ARM call graph](docs/lk-fastboot-unlock-disassembly.md). The 2024/2025 OTA LK partitions are byte-identical; June-2023 and Jan-2024 LK command-dispatch and verification ranges were byte-identical despite differing build stamps. The [OTA Range probe](scripts/remote_ota_probe.py) now supports `--include-lk`.
 
-See [verified 2021–2025 preloader timeline](docs/verified-preloader-timeline.md), [verified 2021 OTA analysis](docs/ota-2021-analysis.md) (nine partitions, four preloader images, hashes) and [read-only reproduction script](scripts/ota_inventory.py). Twenty-six synthetic tests pass locally (with optional Capstone installed); all examined OTA preloader partition hashes matched their manifests. See [ARM disassembly findings](docs/arm-range-check-analysis.md), [signature/load ordering](docs/tee-load-signature-order.md), [TEE header address processing](docs/tee-header-address-processing.md), and [SRAM target intersection](docs/sram-guard-exploit-intersection.md).
+See [verified 2021–2025 preloader timeline](docs/verified-preloader-timeline.md), [verified 2021 OTA analysis](docs/ota-2021-analysis.md) (nine partitions, four preloader images, hashes) and [read-only reproduction script](scripts/ota_inventory.py). Thirty-eight synthetic tests pass locally (with optional Capstone installed); all examined OTA preloader partition hashes matched their manifests. See [ARM disassembly findings](docs/arm-range-check-analysis.md), [signature/load ordering](docs/tee-load-signature-order.md), [TEE header address processing](docs/tee-header-address-processing.md), and [SRAM target intersection](docs/sram-guard-exploit-intersection.md).
 
 Do not flash Donut images to Crumpet or modify NAND partitions based on these findings.
