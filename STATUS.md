@@ -1,4 +1,4 @@
-# Research status — 2026-10-08
+# Research status — 2026-10-09
 
 **No proven persistent unlock, root or TWRP for Crumpet (C78MP8).** This repository is research, not a flash guide.
 
@@ -21,6 +21,7 @@
 | 2023-era TEE header address processing | Thumb calls cross-checked in official 2024/2025 OTA images | **Verified:** header parser `0x20F368`, conditional address helper `0x216130`, memory guard `0x20F1A0` before bulk read; exact `0xFFFFFFFF` behavior remains open |
 | ATF/TEE load vs signature order | Direct ARM `BL` call graph from official binaries | **Verified:** image data loaded before respective post-load verification wrapper; new guard inside loader before larger read |
 | 2019→2023 byte-level comparison | Public 2019 excerpt + official OTA image bearing the 2023 build | Byte spans matched; complete function-level correspondence outstanding |
+| Decoded ARM startup BSS and Thumb handoff, 2019/2021/2022/2025 | 17 exact A32 opcodes in four verified Crumpet images, SRAM zeroing loop, and ARM→Thumb PC literal | **Verified stored-image startup:** BSS `[0x102180,0x1097FC)` (2019–2022), `[0x102180,0x109DAC)` (2025), continuation `0x20E34D` (2019/2021), `0x20E375` (2022), `0x20E40D` (2025). Runtime relocation unmeasured |
 | Runtime patch-address mapping | `FILE_INFO` load address and ARM entry matched on OTA images | **Stored-file VMA mapping corroborated**, live runtime relocation and exploit patch addresses still unverified |
 | TWRP for raw NAND Crumpet | Existing shared device tree | Not demonstrated |
 | Amazon vendor unlock code path in LK | Official OTA LK images from 2021, 2022, 2023, 2024, 2025, all manifest-SHA-256 verified; 2024/2025 LK direct ARM/Thumb call graph | **Generic `flash:` dispatch and certificate-gated `unlock` verifier confirmed; no accepted cert or working production unlock known** |
@@ -36,7 +37,9 @@
 | Crumpet EMI consistency 2021–2025 | Official Amazon preloader OTA payloads, manifest SHA-256 checks, same MTKClient-compatible EMI trailer extraction | **Identical `MTK_BLOADER_INFO_v28` trailer, 400 bytes, SHA-256 `c2a394668216e8bc20959bef29aee38002854a0b38444f6fcd9877fd5d548120`** across four independently verified firmware builds |
 | MTKClient DA duplicate-subcode logic | Inspected `daconfig.py` at `cd25cf9` | **Tautological comparison `da.hw_sub_code == da.hw_sub_code`**; unrelated to whether a DA actually runs |
 
-**No currently validated Crumpet root/unlock path** as of 2026-10-08; see [research feasibility assessment](docs/root-unlock-feasibility-2026-10-08.md) for independent community confirmation, certified-LK findings, BROM limits and recovery prerequisites.
+**No currently validated Crumpet root/unlock path** as of 2026-10-09; see [research feasibility assessment](docs/root-unlock-feasibility-2026-10-08.md) for independent community confirmation, certified-LK findings, BROM limits and recovery prerequisites.
+
+**New (2026-10-09):** [Verified four-build ARM startup and SRAM memory literal study](docs/crumpet-arm-bootstrap-memory-map.md) recovers BSS zeroing, debug/control fields and firmware-specific Thumb handoff destinations directly from identical A32 instructions. [Read-only inspector](scripts/audit_preloader_bootstrap.py) adds eight synthetic tests; this does not establish later live RAM mapping or root.
 
 **New:** [Amonet-koboreru Crumpet patch-site audit against five images](docs/amonet-hardcoded-patch-address-audit.md) maps every `devices/crumpet.c` literal address through the 2019 or newer MediaTek GFH load mapping and shows mismatching code/data contexts. The patch helper uses direct absolute writes; no live runtime layout or functional unlock is established. [Read-only verifier](scripts/audit_amonet_patch_sites.py).
 
@@ -56,6 +59,6 @@
 
 **New:** [2021–2025 LK image version matrix](docs/lk-image-timeline.md) and [vendor unlock ARM call graph](docs/lk-fastboot-unlock-disassembly.md). The 2024/2025 OTA LK partitions are byte-identical; June-2023 and Jan-2024 LK command-dispatch and verification ranges were byte-identical despite differing build stamps. The [OTA Range probe](scripts/remote_ota_probe.py) now supports `--include-lk`.
 
-See [verified 2021–2025 preloader timeline](docs/verified-preloader-timeline.md), [verified 2021 OTA analysis](docs/ota-2021-analysis.md) (nine partitions, four preloader images, hashes) and [read-only reproduction script](scripts/ota_inventory.py). Ninety-six synthetic tests pass locally (with optional Capstone installed); all examined OTA preloader partition hashes matched their manifests. See [ARM disassembly findings](docs/arm-range-check-analysis.md), [signature/load ordering](docs/tee-load-signature-order.md), [TEE header address processing](docs/tee-header-address-processing.md), and [SRAM target intersection](docs/sram-guard-exploit-intersection.md).
+See [verified 2021–2025 preloader timeline](docs/verified-preloader-timeline.md), [verified 2021 OTA analysis](docs/ota-2021-analysis.md) (nine partitions, four preloader images, hashes) and [read-only reproduction script](scripts/ota_inventory.py). One hundred four synthetic tests pass locally (with optional Capstone installed); all examined OTA preloader partition hashes matched their manifests. See [ARM disassembly findings](docs/arm-range-check-analysis.md), [signature/load ordering](docs/tee-load-signature-order.md), [TEE header address processing](docs/tee-header-address-processing.md), and [SRAM target intersection](docs/sram-guard-exploit-intersection.md).
 
 Do not flash Donut images to Crumpet or modify NAND partitions based on these findings.
