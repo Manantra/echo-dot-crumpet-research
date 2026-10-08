@@ -1,0 +1,24 @@
+name: Read-only research tool tests
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+permissions:
+  contents: read
+
+jobs:
+  python-tests:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out sources
+        uses: actions/checkout@v4
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Compile all Python tools
+        run: python -m compileall -q scripts tests
+      - name: Run synthetic, firmware-free unit tests
+        run: python -m unittest discover -s tests -v
