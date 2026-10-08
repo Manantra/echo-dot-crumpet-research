@@ -35,6 +35,8 @@ The first of these pairs shows that different full-file hashes can reflect chang
 
 The large 2023→2024 change, along with disappearance of the diagnostic string, **narrows the location of a substantial firmware change to between the 2022-03-23 and 2023-07-26 preloader builds**. It does **not** establish that a particular memory corruption weakness was fixed. Code-flow disassembly and comparison of the exact routines remain outstanding.
 
+An additional **direct 2019-vs-2023-build byte comparison** (2019 public excerpt vs May-2025 OTA carrying build `20231103_072325`) found **26 aligned, non-overlapping exact-match spans of at least 256 bytes**, totaling **32,256 matching bytes** across potentially different offsets. Many of these matches are headers or shared static data, so this is not a count of unchanged executable instructions. One shared span of `0x4E0` bytes maps 2019 file offset `0x6460` to the 2023-build file offset `0x8460`. A 2023 function-level disassembly remains to be done.
+
 The 2019 public NAND excerpt uses a different wrapper layout (`FILE_INFO` at `0x6008`) and cannot be directly file-offset-aligned against these 2021–2025 OTA images (`FILE_INFO` at `0x8008`).
 
 ## Reproduce the OTA checks without downloading multi-megabyte firmware
