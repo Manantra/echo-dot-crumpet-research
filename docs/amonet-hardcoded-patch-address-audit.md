@@ -43,7 +43,7 @@ stored_file_offset = executable_entry_file_offset +
                      (candidate_RAM_address - encoded_load_address)
 ```
 
-It is corroborated by the ARM entry and other mapped instructions/PC-relative strings in [our earlier static analyses](arm-range-check-analysis.md). **It is not, on its own, a measurement of actual runtime SRAM layout.** A relocation or transformed address in a real boot session could invalidate the mapping.
+It is corroborated by the ARM entry and other mapped instructions/PC-relative strings in [our earlier static analyses](arm-range-check-analysis.md). **It is not, on its own, a measurement of actual runtime SRAM layout.** An [additional opcode-level audit of the ARM startup](crumpet-arm-bootstrap-memory-map.md) now independently validates the same embedded entry and literal BSS zeroing in four historical builds, plus the actual indirect ARM→Thumb continuation. This materially strengthens *stored-image* address interpretation, but still does not observe later live memory at `apply_patches()` time. A relocation or transformed address in a real boot session could invalidate the mapping.
 
 ## 3. The absolute amonet targets do not correspond to an unchanged instruction signature
 
