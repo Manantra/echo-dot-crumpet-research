@@ -38,8 +38,8 @@ def parse_loader(path, target=0x8167):
             continue
         if old:
             software_version = 0
-            region_count = struct.unpack_from("<H", raw, address + 16)[0]
-            first_region = address + 18
+            region_count = struct.unpack_from("<H", raw, address + 14)[0]
+            first_region = address + 16
         else:
             software_version = struct.unpack_from("<H", raw, address + 8)[0]
             region_count = struct.unpack_from("<H", raw, address + 18)[0]
