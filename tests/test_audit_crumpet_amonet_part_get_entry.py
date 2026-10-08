@@ -59,6 +59,17 @@ class ThumbEntryTests(unittest.TestCase):
         self.assertEqual(result["containing_vma"], 0x20F24E)
         self.assertEqual(result["containing_size"], 4)
 
+    def test_archived_2019_target_also_inside_thumb2(self):
+        data = manufactured_image()
+        # 2019: 16-bit cmp, 32-bit conditional branch, 32-bit LDR.W.
+        put(data, 0x20F248, bytes.fromhex("9c4200f0ad80d0f89c30"))
+        result = thumb_boundary(bytes(data), 0x20F250, 0x20F248,
+                                bytes.fromhex("9c4200f0"))
+        self.assertEqual(result["relation"], "middle_of_thumb2_instruction")
+        self.assertEqual(result["containing_vma"], 0x20F24E)
+        self.assertEqual(result["containing_size"], 4)
+        self.assertEqual(result["containing_mnemonic"], "ldr.w")
+
     def test_2021_same_address_is_an_instruction_boundary(self):
         data = manufactured_image()
         put(data, 0x20F248, bytes.fromhex("06f012fbdaf8003003f5cd23"))
@@ -80,7 +91,7 @@ class ThumbEntryTests(unittest.TestCase):
             thumb_boundary(bytes(data), 0x20F244, 0x20F24A, b"\x00")
 
     def test_unknown_full_image_fingerprint_rejected(self):
-        self.assertEqual(len(KNOWN), 3)
+        self.assertEqual(len(KNOWN), 4)
         with self.assertRaisesRegex(ValueError, "Unknown full partition"):
             inspect_verified_image(self.HEADER, bytes(manufactured_image()))
 
