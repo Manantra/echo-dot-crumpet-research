@@ -10,6 +10,7 @@ Public, community-oriented **read-only reverse-engineering research** for the Am
 - Public [Crumpet UART logs](https://github.com/jvandewiel/no-alexa/tree/main/logicanalyzer/uart_logs) cover 2019 and 2021 preloaders.
 - A [2019 raw-NAND excerpt](https://github.com/jvandewiel/no-alexa/blob/main/dumped_files/brhgptpl_0.bin) is available. Whole-file SHA-256: `e51970de327ec58ba32ee506b7b1358ff7877e43672be833f5d6a7c2b2a68637`.
 - **New (2026-10-08):** We verified and extracted **four March 2021 Crumpet preloader images** from Amazon's Fire OS 6.5.4.8 OTA, with their SHA-256 checksums validated against the official update manifest. [Full analysis](docs/ota-2021-analysis.md).
+- **New, source-proven Crumpet amonet port blockers (2026-10-09):** `enter_usbdl(0)` unconditionally enters a nonreturning USB handshake on Crumpet *before* LK loading (key and cable detection both compile to `true`). Additionally, `LK_PART_NAME "expdb"` is **absent from the CRC-validated Crumpet GPT** in 2019 and November 2025; the source distribution has no `tee_crumpet.img` donor. Even a theoretically executing payload **is not a complete persistent-root boot implementation**. [Source and GPT evidence](docs/amonet-crumpet-unreachable-lk-and-expdb.md).
 - **New ARM bootstrap evidence (2026-10-09):** Four genuine 2019/2021/2022/2025 Crumpet preloaders share exactly the same ARM BSS-zeroing and indirect ARM→Thumb handoff instructions. Their embedded SRAM bounds, control-slot pointers, and Thumb continuation destinations differ. A new opcode-validated [bootstrap audit](docs/crumpet-arm-bootstrap-memory-map.md) substantially strengthens the stored-file/VMA mapping, **without proving actual runtime relocation** or any root method.
 - **New Crumpet amonet patch-site validation warning:** All five upstream hardcoded RAM-patch addresses were mapped into **2019, 2021, 2022, 2024 and 2025** preloader files. At least one supposed function (`0x217F2C`) maps **inside a USB ASCII diagnostic in the 2019 image**, and other sites change meaning across versions. The upstream patcher writes directly to the given RAM address, without version-based remapping; live RAM relocation remains unverified. [Full byte-by-byte audit](docs/amonet-hardcoded-patch-address-audit.md). **Do not try these constants on a device.**
 - **New (2026-10-08): Complete Crumpet NAND/GPT header decode.** We independently verified both CRC32s and **all 18 unchanged logical partition ranges from the public 2019 NAND excerpt through Nov 2025**. All 309 altered bytes in a May→Nov 2025 Preloader partition are **GPT disk/partition GUID bytes plus CRC32 fields**, not new Preloader code. The four redundant boot-copy BRLYT fields map exactly to their corresponding GPT first LBAs. **Not a root/recovery procedure.** [Detailed findings](docs/crumpet-nand-gpt-2019-2025.md).
@@ -30,6 +31,7 @@ Public, community-oriented **read-only reverse-engineering research** for the Am
 ## Where to start
 
 - [Research status and evidence levels](STATUS.md)
+- **[Amonet Crumpet source-level boot dead end, missing GPT `expdb` and absent donor image](docs/amonet-crumpet-unreachable-lk-and-expdb.md)**
 - **[Crumpet ARM bootstrap: directly decoded BSS clear and Thumb handoff across 2019–2025](docs/crumpet-arm-bootstrap-memory-map.md)**
 - **[Published Crumpet amonet hardcoded patch-site audit against 5 verified preloaders](docs/amonet-hardcoded-patch-address-audit.md)**
 - **[Fully decoded Crumpet raw-NAND GPT container, valid CRCs, 2019–2025 stable layout, four boot-copy offsets](docs/crumpet-nand-gpt-2019-2025.md)**
@@ -88,6 +90,8 @@ python3 scripts/audit_nand_boot_gpt.py --image /path/to/2019/brhgptpl_0.bin
 python3 scripts/audit_amonet_patch_sites.py /path/to/amonet/amonet/devices/crumpet.c /path/to/amonet/amonet/patch.c /path/to/preloader.bin
 # Read-only A32 bootstrap/BSS/Thumb-address validation against local preloader image
 python3 scripts/audit_preloader_bootstrap.py /path/to/preloader.bin
+# Validate Amonet source boot path and actual Crumpet NAND GPT names, read-only
+python3 scripts/audit_amonet_crumpet_boot_flow.py /path/to/amonet-koboreru/amonet --official-ota AMAZON_CRUMPET_OTA_URL
 python3 scripts/audit_da_stage2.py /path/to/mtkclient/mtkclient/Loader
 python3 scripts/audit_preloader_emi.py /path/to/local-crumpet-preloader.bin
 python3 -m unittest discover -s tests -v
