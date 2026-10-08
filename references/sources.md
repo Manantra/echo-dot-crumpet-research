@@ -13,6 +13,9 @@
 - [Upstream payload generator](https://github.com/R0rt1z2/amonet-koboreru/blob/main/create_tee_image.py) — exact Crumpet payload size calculation.
 - [Verified 2021–2025 Crumpet preloader timeline](../docs/verified-preloader-timeline.md) — source URLs, build strings, hashes, and binary comparisons.
 - [September 2021 Crumpet OTA — our verified analysis](../docs/ota-2021-analysis.md) — OTA manifest, all four preloader SHA-256s and non-destructive reproduction.
+- [Verified Crumpet LK firmware timeline](../docs/lk-image-timeline.md) — SHA-256-verified 2021–2025 LK builds and code-region comparisons.
+- [Amazon vendor LK unlock call graph](../docs/lk-fastboot-unlock-disassembly.md) — verified Thumb string cross-references and certificate-gated Fastboot control flow.
+- [LibreEcho hardware roadmap](https://dev.libreecho.org/) — claims Crumpet access, but links to untested upstream amonet port; not independent proof.
 - [October 2026 Crumpet research assessment](../docs/root-unlock-feasibility-2026-10-08.md) — independent community report, verified LK certificate-related strings, BROM limitations, NAND recovery research.
 - [Crumpet Fastboot research wiki](https://github.com/jvandewiel/no-alexa/wiki/Fastboot) — locked fastboot response and one-time unlock certificate failure.
 - [Crumpet NAND dumping and decoding wiki](https://github.com/jvandewiel/no-alexa/wiki/Decoding-NAND-flash) — BCH/PRBS details.
