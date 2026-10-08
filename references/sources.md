@@ -2,6 +2,9 @@
 
 - [R0rt1z2/amonet-koboreru](https://github.com/R0rt1z2/amonet-koboreru) — exploit source, **untested** Crumpet support.
 - [Crumpet patch source](https://github.com/R0rt1z2/amonet-koboreru/blob/main/devices/crumpet.c).
+- [Latest catalogued Crumpet Nov-2025 LK/Preloader comparison](../docs/latest-2025-ota-boot-payload-comparison.md) — four manifest-verified 2025 preloader GFH images are byte-identical, despite varying NAND prefix, and Nov-2025's four boot copies share the GFH image.
+- [FTVDB Crumpet official OTA index through Nov-2025](https://ftvdb.com/echo/firmware/com.amazon.crumpet.android.os/) — official OTA URLs and listed publication dates.
+- [Independent MT6739 DA Stage-2 timeout](https://github.com/bkerler/mtkclient/issues/26) — BROM, Kamakiri, DA patching and accepted EMI but same generic Stage-2 timeout, NOT a proven Crumpet exploit.
 - [MTKClient (pinned 2026-09-12 code)](https://github.com/bkerler/mtkclient/tree/cd25cf9) — hardware 0x8167 XFLASH mapping, DRAM response semantics, stage-2 exception and DA version selection.
 - [DA1/DA2 SHA pairing and BROM-vs-Preloader Stage-1 setup audit](../docs/da1-da2-pairing-handoff-checks.md) — direct SHA-1 matches from bundled agent binaries, original-method synthetic reproduction of unchecked setup results.
 - [Read-only DA1/DA2 pairing verifier](../scripts/audit_da_pair_integrity.py) and [AST-based connection-mode flow inspector](../scripts/audit_xflash_mode_flow.py) — no firmware writes or USB access.
