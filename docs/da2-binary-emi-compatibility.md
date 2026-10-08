@@ -21,6 +21,21 @@ The bundled MTKClient Loader directory contains **two different ARM32 executable
 
 The DA1 and DA2 initial control-transfer locations were computed from the first **ARM unconditional branch instruction** of each matching executable region. The DA2 initial branch instruction, `0xEA000007`, targets `0x40000024` for both files. The first **244 bytes** of their DA2 executable bodies match, followed by substantial differences.
 
+### More precise difference in the ARM startup memory layout
+
+Both DA2 images use the same ARM reset/init loop from `0x40000024` through `0x400000F0`. This decoded sequence copies relocatable data, sets CPU mode-specific stack pointers, and zero-initializes BSS. **The first differing binary word is at file offset `0xF4`**, where the image calls a different next-stage function. Other immediately following differences are **literal pointers**, not evidence that the common startup logic itself was rewritten.
+
+The decoded `LDR`/comparison/`STRLT` loop at ARM addresses `0x400000D4`–`0x400000E8` loads its zero-fill boundaries from literal values at image offsets `0x11C` and `0x120`. These provide exact **static BSS spans**:
+
+| DA2 build | Zero-initialized BSS start | BSS end, exclusive | Clear length |
+|---|---|---|---|
+| V5 | `0x400559A0` | `0x4006A520` | `0x14B80` bytes |
+| Alternative | `0x400315A0` | `0x400456E0` | `0x14140` bytes |
+
+Both remain within the ordinary `0x40000000`-based DRAM address space, but the **required occupied regions differ**, along with the branch into later initialization code. The report cannot infer that Crumpet actually has insufficient DRAM for the larger build from these addresses alone.
+
+The updated `audit_da_stage2.py` independently recovers these ranges **only after verifying the expected ARM opcodes** for the BSS-clearing loop. Synthetic tests additionally confirm that altered opcodes prevent a false BSS inference.
+
 The signature-tailed regions were parsed and independently SHA-256 checked against their local source files. For independent cross-check:
 
 | Executable region | V5 SHA-256, including signature | Alternative SHA-256, including signature |
