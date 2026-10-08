@@ -53,6 +53,14 @@ def nearby_ascii_sequences(data, offset, margin=40):
     stop = min(len(data), offset + margin + 16)
     sequences = []
     for found in re.finditer(rb"[ -~]{8,}", data[start:stop]):
+        candidate = found.group()
+        # Executable Thumb bytes can accidentally form 8-byte printable
+        # runs. Require a longer phrase with spaces and alphabetic content
+        # before calling it human-readable, and still mark as a heuristic.
+        if not (len(candidate) >= 12 and b" " in candidate and
+                sum(65 <= byte <= 90 or 97 <= byte <= 122
+                    for byte in candidate) >= 6):
+            continue
         lo, hi = start + found.start(), start + found.end()
         if lo - 4 <= offset <= hi + 4:
             sequences.append({
@@ -123,9 +131,9 @@ def main():
                   f"stored offset {x['offset']:#x}, first 4 bytes "
                   f"{x['first_4_bytes']}")
             for info in x["nearby_printable"]:
-                print("    Nearby ASCII:", repr(info["text"][:72]),
-                      "[SITE INSIDE TEXT]" if info["contains_site"] else
-                      "[SITE CLOSE TO TEXT]")
+                print("    Plausible ASCII context (heuristic):", repr(info["text"][:72]),
+                      "[SITE WITHIN PRINTABLE SPAN]" if info["contains_site"] else
+                      "[SITE CLOSE TO PRINTABLE SPAN]")
             if x["thumb_first_instructions"]:
                 print("    Thumb decoding from site:",
                       " | ".join(f"{op} {args}" for op, args in
