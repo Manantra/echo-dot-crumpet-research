@@ -13,10 +13,12 @@
 | Crumpet amonet-koboreru port | Author statement | Not tested on actual device |
 | 2019→2021 binary comparison | Both source binaries available | Initial byte-level comparison performed; function-level comparison outstanding |
 | 2022→2023-build range checking | ARM Thumb disassembly and PC-relative string xrefs | **Confirmed rewrite:** old `0x20F0C0` vs new `0x20F1A0` plus overlap helper `0x20E3D8` |
+| Exploit SRAM target covered by guard | PC-relative initialized memory boundaries in two official images; upstream payload/config | **Verified:** BSS `[0x00102180,0x00109DAC)` contains BDEV `0x001086EC`; published copy size `0x00108804` intersects it |
+| ATF/TEE load vs signature order | Direct ARM `BL` call graph from official binaries | **Verified:** image data loaded before respective post-load verification wrapper; new guard inside loader before larger read |
 | 2019→2023 byte-level comparison | Public 2019 excerpt + official OTA image bearing the 2023 build | Byte spans matched; complete function-level correspondence outstanding |
 | Runtime patch-address mapping | `FILE_INFO` load address and ARM entry matched on OTA images | **Stored-file VMA mapping corroborated**, live runtime relocation and exploit patch addresses still unverified |
 | TWRP for raw NAND Crumpet | Existing shared device tree | Not demonstrated |
 
-See [verified 2021–2025 preloader timeline](docs/verified-preloader-timeline.md), [verified 2021 OTA analysis](docs/ota-2021-analysis.md) (nine partitions, four preloader images, hashes) and [read-only reproduction script](scripts/ota_inventory.py). Ten synthetic tests pass locally (with optional Capstone installed); all examined OTA preloader partition hashes matched their manifests. See [ARM disassembly findings](docs/arm-range-check-analysis.md).
+See [verified 2021–2025 preloader timeline](docs/verified-preloader-timeline.md), [verified 2021 OTA analysis](docs/ota-2021-analysis.md) (nine partitions, four preloader images, hashes) and [read-only reproduction script](scripts/ota_inventory.py). Sixteen synthetic tests pass locally (with optional Capstone installed); all examined OTA preloader partition hashes matched their manifests. See [ARM disassembly findings](docs/arm-range-check-analysis.md), [signature/load ordering](docs/tee-load-signature-order.md), and [SRAM target intersection](docs/sram-guard-exploit-intersection.md).
 
 Do not flash Donut images to Crumpet or modify NAND partitions based on these findings.
