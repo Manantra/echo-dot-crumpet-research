@@ -1,6 +1,6 @@
 # Critical Crumpet amonet port blockers: unconditional USB loop and missing LK partition
 
-**Verified:** 2026-10-09. **Devices:** Amazon Echo Dot 3rd Gen Refresh *Crumpet* C78MP8. **Source revision:** [`R0rt1z2/amonet-koboreru` commit `2a28fd0`](https://github.com/R0rt1z2/amonet-koboreru/tree/2a28fd0). **Mode:** read-only static C-source audit, synthetic unit tests, CRC-validated **2019 public Crumpet NAND GPT** and SHA-256-manifest-verified **Nov 2025 Amazon Crumpet OTA GPT**. **No payload compiled, flashed, executed or loaded onto a real device.**
+**Verified:** 2026-10-09. **Devices:** Amazon Echo Dot 3rd Gen Refresh *Crumpet* C78MP8. **Source revision:** [`R0rt1z2/amonet-koboreru` commit `2a28fd0`](https://github.com/R0rt1z2/amonet-koboreru/tree/2a28fd0). **Mode:** read-only static C-source audit, synthetic unit tests, CRC-validated **2019 public Crumpet NAND GPT** and SHA-256-manifest-verified **Nov 2025 Amazon Crumpet OTA GPT**. **No payload compiled, flashed, executed or loaded onto a real device.** A further [original-image Thumb-2 entry audit](crumpet-amonet-part-get-thumb2-misalignment.md) now establishes that the published `PART_GET_ADDR` is **inside a 4-byte Thumb instruction** on official 2022 and Nov-2025 firmware, an additional independent barrier even if the infinite USB path were removed.
 
 ### Executive result
 
