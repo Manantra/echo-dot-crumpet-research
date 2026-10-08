@@ -8,6 +8,6 @@ Candidate translations of upstream runtime address `0x00217F2C` to offsets withi
 
 The 2019 and 2021 preloader images share some exact byte ranges but have different overall layouts: `FILE_INFO` at `0x6008` in the public 2019 excerpt versus `0x8008` in 2021. The four 2021 OTA images differ from each other at only four early header bytes. See [verified image hashes and extraction procedure](ota-2021-analysis.md).
 
-The full 2023 preloader binary is not available for analysis; we have not completed a 2019-vs-2023 function-level disassembly.
+**Update (2026-10-08):** An image with the exact **2023** build string `20231103_072325` was reconstructed from official May/Nov 2025 OTAs. The complete image's SHA-256 differs from the public community dump hash; they are **not shown to be bitwise identical**. We have carried out initial 2019/2021/2022/2023 byte-level comparisons but have **not** established runtime address mappings or performed a function-level disassembly of the overlapping-security routines. See [verified timeline](verified-preloader-timeline.md).
 
 See [2019 UART](https://github.com/jvandewiel/no-alexa/blob/main/logicanalyzer/uart_logs/uart_normal_oldsw.txt) and [2021 UART](https://github.com/jvandewiel/no-alexa/blob/main/logicanalyzer/uart_logs/normal_boot.txt).
