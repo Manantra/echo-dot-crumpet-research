@@ -86,6 +86,10 @@ def source_audit(root):
         r"&&\s*usbdl_detect_key\s*\(\s*\)\s*\)\s*\)", enter))
     enter_uses_loop = bool(re.search(r"\bdo_usb_handshake\s*\(\s*\)", enter))
     main = get_function(source["main"], "main")
+    # The upstream main.c comments explicitly mention enter_usbdl()
+    # *before* the actual call. Remove comments to avoid a false path match.
+    main = re.sub(r"/\\*.*?\\*/", "", main, flags=re.DOTALL)
+    main = re.sub(r"//[^\\n]*", "", main)
     main_order = []
     for symbol in ("apply_patches", "setup_usb_descriptors",
                    "boot_device_init", "enter_usbdl", "bldr_load_part"):
