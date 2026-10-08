@@ -8,6 +8,7 @@
 - [2021 Crumpet UART log](https://github.com/jvandewiel/no-alexa/blob/main/logicanalyzer/uart_logs/normal_boot.txt).
 - [TWRP device-tree project](https://github.com/R0rt1z2/twrp_device_amazon_echo-mt8167) — source exists, **not** confirmed working for Crumpet.
 - [Crumpet OTA index](https://github.com/FTVDB/FTVDB/blob/main/database/firmware/com.amazon.crumpet.android.os.json) — official 2021 download URL, archived MD5 and historic metadata.
+- [Verified 2021–2025 Crumpet preloader timeline](../docs/verified-preloader-timeline.md) — source URLs, build strings, hashes, and binary comparisons.
 - [September 2021 Crumpet OTA — our verified analysis](../docs/ota-2021-analysis.md) — OTA manifest, all four preloader SHA-256s and non-destructive reproduction.
 - [Android update-engine manifest schema](https://android.googlesource.com/platform/system/update_engine/+/HEAD/update_metadata.proto) — public protobuf field specifications.
 
