@@ -10,7 +10,7 @@ Public, community-oriented **read-only reverse-engineering research** for the Am
 - Public [Crumpet UART logs](https://github.com/jvandewiel/no-alexa/tree/main/logicanalyzer/uart_logs) cover 2019 and 2021 preloaders.
 - A [2019 raw-NAND excerpt](https://github.com/jvandewiel/no-alexa/blob/main/dumped_files/brhgptpl_0.bin) is available. Whole-file SHA-256: `e51970de327ec58ba32ee506b7b1358ff7877e43672be833f5d6a7c2b2a68637`.
 - **New (2026-10-08):** We verified and extracted **four March 2021 Crumpet preloader images** from Amazon's Fire OS 6.5.4.8 OTA, with their SHA-256 checksums validated against the official update manifest. [Full analysis](docs/ota-2021-analysis.md).
-- **Unlock research update:** Official May-2025 `lk` contains vendor `flash:unlock`, `flash:otucert`, `flash:otucode`, and one-time unlock certificate verifier strings. An authenticated certificate / functioning production unlock remains **unknown**. [Detailed feasibility review](docs/root-unlock-feasibility-2026-10-08.md).
+- **Unlock research update:** Independently verified official `lk` binaries from **2021–2025** contain vendor `flash:unlock`, `flash:otucert`, `flash:otucode` strings. For the 2024/2025-identical `lk`, Thumb disassembly confirms the generic Fastboot dispatcher, the actual `unlock` validation call and one-time certificate/code handlers. No publicly validated accepted certificate or persistent Crumpet unlock exists. [Verified LK timeline](docs/lk-image-timeline.md) · [ARM unlock call graph](docs/lk-fastboot-unlock-disassembly.md).
 - **Verified newer header-handling call chain:** the loader reads the 512-byte header, parses address/length, optionally transforms the TEE destination, checks protected memory ranges, then performs its larger read. The ATF/TEE verification wrapper follows the load. [Details](docs/tee-header-address-processing.md).
 - **Key SRAM protection finding:** newer preloader builds guard BSS `[0x00102180, 0x00109DAC)`, which **contains the published payload's block-device target `0x001086EC`**. A hypothetical copy matching the payload's effective zero destination and size `0x00108804` intersects this protected region, so the new guard would reject it *if passed the actual copy address and size*. [Verified boundaries and conditional analysis](docs/sram-guard-exploit-intersection.md).
 - **ARM analysis:** The 2022 preloader range checks and the 2023/2024-era rewritten text/BSS guards have been disassembled, with confirmed literal cross-references and calls. [Code analysis](docs/arm-range-check-analysis.md). This does not establish exploitable behaviour.
@@ -21,6 +21,8 @@ Public, community-oriented **read-only reverse-engineering research** for the Am
 ## Where to start
 
 - [Research status and evidence levels](STATUS.md)
+- **[Verified LK firmware chronology: 2021–2025](docs/lk-image-timeline.md)**
+- **[Decoded vendor LK Fastboot unlock/certificate call graph](docs/lk-fastboot-unlock-disassembly.md)**
 - **[Current Crumpet root/unlock feasibility assessment (2026-10-08): verified LK certificate code, BROM limitations and NAND recovery](docs/root-unlock-feasibility-2026-10-08.md)**
 - [Boot chain and exploit preconditions](docs/boot-chain.md)
 - [Preliminary preloader binary analysis](docs/preloader-analysis.md)
@@ -43,10 +45,12 @@ python3 scripts/audit_sram_guard.py /path/to/local-2023-era-preloader.bin
 python3 scripts/inspect_guard_chain.py /path/to/local-2023-era-preloader.bin
 python3 scripts/trace_preloader_calls.py /path/to/local-2023-era-preloader.bin --begin 0x20df40 --length 0xe0 --target 0x20f3ac --target 0x216100
 python3 scripts/ota_inventory.py /path/to/original-crumpet-ota.bin --verify-bootloaders
-python3 scripts/remote_ota_probe.py 'https://d1s31zyz7dcc2d.cloudfront.net/2025/5/15/e3e28ff9-b9bf-4946-9793-900df1c389ac/update-kindle-crumpet-NS6566_user_6813_0011779349892.bin'
+python3 scripts/remote_ota_probe.py 'https://d1s31zyz7dcc2d.cloudfront.net/2025/5/15/e3e28ff9-b9bf-4946-9793-900df1c389ac/update-kindle-crumpet-NS6566_user_6813_0011779349892.bin' --include-lk
 # Optional: install Capstone to disassemble a locally obtained preloader
 # python3 -m pip install capstone
 python3 scripts/disassemble_preloader.py /path/to/local-preloader.bin --address 0x20e3d8 --length 0x2a
+# For the exact sha256-pinned official Crumpet LK from Jan 2024 / May 2025:
+python3 scripts/inspect_lk_unlock.py /path/to/local-lk.bin
 python3 -m unittest discover -s tests -v
 ```
 
