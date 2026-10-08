@@ -10,6 +10,7 @@ Public, community-oriented **read-only reverse-engineering research** for the Am
 - Public [Crumpet UART logs](https://github.com/jvandewiel/no-alexa/tree/main/logicanalyzer/uart_logs) cover 2019 and 2021 preloaders.
 - A [2019 raw-NAND excerpt](https://github.com/jvandewiel/no-alexa/blob/main/dumped_files/brhgptpl_0.bin) is available. Whole-file SHA-256: `e51970de327ec58ba32ee506b7b1358ff7877e43672be833f5d6a7c2b2a68637`.
 - **New (2026-10-08):** We verified and extracted **four March 2021 Crumpet preloader images** from Amazon's Fire OS 6.5.4.8 OTA, with their SHA-256 checksums validated against the official update manifest. [Full analysis](docs/ota-2021-analysis.md).
+- **New Stage-2 handoff finding:** MTKClient's `Stage was't executed` message can be triggered by a missing/truncated **XFLASH USB status response**, not just device failure; the Crumpet's 2019/2021 UART logs show **256 MiB RAM at `0x40000000`**, with both DA2 code/BSS layouts fitting physically. [Status and memory analysis](docs/da2-handoff-status-memory.md).
 - **DA2 binary + EMI research:** Both bundled MT8167 DA2 variants have ARM entry `0x40000024` and raw-NAND/BMT diagnostics, but distinct executable bodies. Independently verified official Crumpet 2021/2022/2024/2025 preloaders contain an **identical 400-byte EMI block (`MTK_BLOADER_INFO_v28`)**. No DA2 on Crumpet has been shown to boot. [Detailed binary analysis](docs/da2-binary-emi-compatibility.md).
 - **MT8167 Download Agent research:** Source-code auditing identifies Stage-2 timeout as a missing response, **not proof** of DRAM or NAND failure. The bundled MTKClient has **two distinct 0x8167 DA binaries** (both targeting Stage-2 address `0x40000000`), but its version/duplicate selection normally retains only one. [Evidence and limits](docs/mtkclient-da-stage2-analysis.md).
 - **Unlock research update:** Independently verified official `lk` binaries from **2021–2025** contain vendor `flash:unlock`, `flash:otucert`, `flash:otucode` strings. For the 2024/2025-identical `lk`, Thumb disassembly confirms the generic Fastboot dispatcher, the actual `unlock` validation call and one-time certificate/code handlers. No publicly validated accepted certificate or persistent Crumpet unlock exists. [Verified LK timeline](docs/lk-image-timeline.md) · [ARM unlock call graph](docs/lk-fastboot-unlock-disassembly.md).
@@ -25,6 +26,7 @@ Public, community-oriented **read-only reverse-engineering research** for the Am
 - [Research status and evidence levels](STATUS.md)
 - **[MTKClient MT8167 DA Stage-2 timeout: source-code analysis](docs/mtkclient-da-stage2-analysis.md)**
 - **[MT8167 DA2 executable comparison and verified 2021–2025 Crumpet EMI block](docs/da2-binary-emi-compatibility.md)**
+- **[XFLASH status protocol, USB exception handling and Crumpet's measured 256 MiB DRAM](docs/da2-handoff-status-memory.md)**
 - **[Verified LK firmware chronology: 2021–2025](docs/lk-image-timeline.md)**
 - **[Decoded vendor LK Fastboot unlock/certificate call graph](docs/lk-fastboot-unlock-disassembly.md)**
 - **[Current Crumpet root/unlock feasibility assessment (2026-10-08): verified LK certificate code, BROM limitations and NAND recovery](docs/root-unlock-feasibility-2026-10-08.md)**
@@ -57,6 +59,8 @@ python3 scripts/disassemble_preloader.py /path/to/local-preloader.bin --address 
 python3 scripts/inspect_lk_unlock.py /path/to/local-lk.bin
 # Purely offline: analyze an EXISTING redacted MTKClient log (no device access)
 python3 scripts/classify_mtkclient_stage2.py /path/to/saved-mtkclient.log
+# Read-only decoder for a previously captured 12-byte XFLASH status frame + payload
+python3 scripts/decode_xflash_status.py --hex 'efeeee fe 01000000 04000000 53594e43'
 # Purely offline: inspect your local MTKClient DA loader folder
 python3 scripts/audit_mtkclient_da_metadata.py /path/to/mtkclient/mtkclient/Loader
 python3 scripts/audit_da_stage2.py /path/to/mtkclient/mtkclient/Loader
