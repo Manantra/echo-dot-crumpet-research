@@ -187,7 +187,7 @@ def verify_binary(e, directory):
     if pc_literal(da2, profile["ready"]) != SYNC:
         raise ValueError("DA2 did not build literal four-byte SYNC payload")
     expect(da2, profile["ready"]+6, "movs", "r1, #4")
-    expect(da2, profile["ready"]+8, "str", "r3, [r0, #-4]!")
+    expect(da2, profile["ready"]+8, "str", "r3, [r0, #-0x4]!")
     io = pc_literal(da2, profile["ready"]+0xC)
     if io != profile["io_table"]:
         raise ValueError("DA2 SYNC I/O function-pointer table changed")
