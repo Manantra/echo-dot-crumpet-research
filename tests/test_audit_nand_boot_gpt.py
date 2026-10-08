@@ -75,7 +75,7 @@ class NandGptTests(unittest.TestCase):
         old[0xC00:0xC28] = modern[0x1000:0x1028]
         old[0x2400:0x245C] = modern[0x3000:0x305C]
         old[0x3000:0x4000] = modern[0x4000:0x5000]
-        old[0x6000:0x6004] = b"MMM\\x01"
+        old[0x6000:0x6004] = bytes((77, 77, 77, 1))
         result = inspect_image(bytes(old))
         self.assertEqual(result["gfh_offset"], 0x6000)
         self.assertEqual(result["gpt_offset"], 0x2400)
@@ -90,7 +90,7 @@ class NandGptTests(unittest.TestCase):
         old[0xC00:0xC28] = modern[0x1000:0x1028]
         old[0x2400:0x245C] = modern[0x3000:0x305C]
         old[0x3000:0x4000] = modern[0x4000:0x5000]
-        old[0x6000:0x6004] = b"MMM\\x01"
+        old[0x6000:0x6004] = bytes((77, 77, 77, 1))
         with self.assertRaisesRegex(ValueError, "container layouts differ"):
             classify_differences(bytes(old), modern)
 
