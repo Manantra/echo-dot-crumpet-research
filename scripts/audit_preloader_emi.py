@@ -27,10 +27,12 @@ def inspect(data):
     if not 0x38 < signature_size < image_size <= len(payload):
         raise ValueError("FILE_INFO image/signature lengths inconsistent")
     body = payload[:image_size - signature_size]
-    if len(body) < 0x804:
-        raise ValueError("MediaTek body too small for advertised EMI trailer")
+    if len(body) < 4 + len(BLOADER) + 2:
+        raise ValueError("MediaTek body too small for EMI trailer")
     length = struct.unpack_from("<I", body, len(body) - 4)[0]
     if length == 0:
+        if len(body) < 0x804:
+            raise ValueError("MediaTek body too short for alternate EMI trailer")
         body = body[:-0x800]
         length = struct.unpack_from("<I", body, len(body) - 4)[0]
     if length <= len(BLOADER) + 2 or length > min(MAX_EMI, len(body) - 4):
