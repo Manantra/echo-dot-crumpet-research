@@ -22,7 +22,7 @@ STRINGS = {
     "one-time certificate subcommand": (0x2DF97, b"otucert"),
     "one-time code subcommand": (0x2DFA5, b"otucode"),
     "signed unlock verification name": (0x25230, b"amzn_verify_unlock"),
-    "one-time certificate validation error": (0x25445, b"Verify one time unlock cert fail"),
+    "one-time certificate validation error": (0x25445, b"%s: Verify one time unlock cert fail"),
     "locked command diagnostic": (0x34AC8, b"the command you input is restricted on locked hw"),
 }
 
