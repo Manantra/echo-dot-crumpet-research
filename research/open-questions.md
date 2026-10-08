@@ -28,4 +28,6 @@
 
 19. **Crumpet Amonet patch address safety blocker:** Five published constants from upstream `devices/crumpet.c` are direct RAM-write targets and **cannot be identified as the claimed function entries** in the stored-file mappings of five verified 2019–2025 Preloaders. The earliest `0x217F2C` hits an embedded USB diagnostic string in the 2019 dump. [Full offline patch-site report](../docs/amonet-hardcoded-patch-address-audit.md). **Still unknown:** which binary/version or relocated live RAM image the port targets, and whether its function patches are correctly grounded. Do not write the published constants or flash experimental TEE/NAND images.
 
+20. **ARM bootstrap and RAM-location nuance (2026-10-09):** [Opcode-level startup disassembly](../docs/crumpet-arm-bootstrap-memory-map.md) across 2019, 2021, 2022 and 2025 confirms the literal BSS zero-fill range and the indirect ARM→Thumb handoff, and makes the stored-file address mapping less speculative. The 2019 and 2021 continuation *addresses* are equal but their Thumb bytes differ. Still **no live RAM snapshot**, and startup code cannot prove what regions contain at payload patch time. Next: independently establish live relocation and claimed function entries; no write experiments.
+
 No destructive testing without a validated recovery mechanism.
