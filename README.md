@@ -10,6 +10,7 @@ Public, community-oriented **read-only reverse-engineering research** for the Am
 - Public [Crumpet UART logs](https://github.com/jvandewiel/no-alexa/tree/main/logicanalyzer/uart_logs) cover 2019 and 2021 preloaders.
 - A [2019 raw-NAND excerpt](https://github.com/jvandewiel/no-alexa/blob/main/dumped_files/brhgptpl_0.bin) is available. Whole-file SHA-256: `e51970de327ec58ba32ee506b7b1358ff7877e43672be833f5d6a7c2b2a68637`.
 - **New (2026-10-08):** We verified and extracted **four March 2021 Crumpet preloader images** from Amazon's Fire OS 6.5.4.8 OTA, with their SHA-256 checksums validated against the official update manifest. [Full analysis](docs/ota-2021-analysis.md).
+- **ARM analysis:** The 2022 preloader range checks and the 2023/2024-era rewritten text/BSS guards have been disassembled, with confirmed literal cross-references and calls. [Code analysis](docs/arm-range-check-analysis.md). This does not establish exploitable behaviour.
 - **2023 build now obtained:** the exact Crumpet build string `20231103_072325` appears in preloader images verified from official 2025 OTAs. The image's full hash differs from a community device dump, so bitwise equivalence is **not** claimed. [Verified version timeline](docs/verified-preloader-timeline.md).
 - [`amonet-koboreru`](https://github.com/R0rt1z2/amonet-koboreru) has Crumpet-specific code; its maintainer says the NAND port has **not been tested on real hardware** and is on hold.
 - A [TWRP device tree](https://github.com/R0rt1z2/twrp_device_amazon_echo-mt8167) exists, but a working Crumpet recovery is **not demonstrated**.
@@ -21,6 +22,7 @@ Public, community-oriented **read-only reverse-engineering research** for the Am
 - [Preliminary preloader binary analysis](docs/preloader-analysis.md)
 - [Verified 2021 OTA partition inventory, SHA-256 hashes and 2019 comparison](docs/ota-2021-analysis.md)
 - [Verified 2021–2025 preloader version timeline and byte differences](docs/verified-preloader-timeline.md)
+- **[ARM-disassembled old-vs-new memory-range guards, with cross-references and call sites](docs/arm-range-check-analysis.md)**
 - [Open technical questions](research/open-questions.md)
 - [Sources and attribution](references/sources.md)
 - [How to contribute](CONTRIBUTING.md)
@@ -32,6 +34,9 @@ python3 scripts/preloader_forensics.py --fetch-2019
 python3 scripts/preloader_compare.py older.bin newer.bin
 python3 scripts/ota_inventory.py /path/to/original-crumpet-ota.bin --verify-bootloaders
 python3 scripts/remote_ota_probe.py 'https://d1s31zyz7dcc2d.cloudfront.net/2025/5/15/e3e28ff9-b9bf-4946-9793-900df1c389ac/update-kindle-crumpet-NS6566_user_6813_0011779349892.bin'
+# Optional: install Capstone to disassemble a locally obtained preloader
+# python3 -m pip install capstone
+python3 scripts/disassemble_preloader.py /path/to/local-preloader.bin --address 0x20e3d8 --length 0x2a
 python3 -m unittest discover -s tests -v
 ```
 
