@@ -32,7 +32,7 @@ class DiagnosticTests(unittest.TestCase):
         self.assertTrue(flags["stage2_status_exception"])
         self.assertFalse(flags["stage2_boot_success"])
         self.assertIn("unknown", result)
-        self.assertNotIn("confirmed DRAM", result)
+        self.assertIn("NOT a confirmed DRAM", result)
         self.assertGreater(len(needs), 0)
 
     def test_stage_two_ack_without_execution_proof(self):
