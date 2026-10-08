@@ -3,6 +3,8 @@
 - [R0rt1z2/amonet-koboreru](https://github.com/R0rt1z2/amonet-koboreru) — exploit source, **untested** Crumpet support.
 - [Crumpet patch source](https://github.com/R0rt1z2/amonet-koboreru/blob/main/devices/crumpet.c).
 - [MTKClient (pinned 2026-09-12 code)](https://github.com/bkerler/mtkclient/tree/cd25cf9) — hardware 0x8167 XFLASH mapping, DRAM response semantics, stage-2 exception and DA version selection.
+- [DA1/DA2 SHA pairing and BROM-vs-Preloader Stage-1 setup audit](../docs/da1-da2-pairing-handoff-checks.md) — direct SHA-1 matches from bundled agent binaries, original-method synthetic reproduction of unchecked setup results.
+- [Read-only DA1/DA2 pairing verifier](../scripts/audit_da_pair_integrity.py) and [AST-based connection-mode flow inspector](../scripts/audit_xflash_mode_flow.py) — no firmware writes or USB access.
 - [Crumpet HW/DA version matching and Pexar counterexample](../docs/mt8167-hw-revision-da-selection.md) — cross-device version matching and mode differences.
 - [MTKClient Pexar MT8167 issue #9](https://github.com/bkerler/mtkclient/issues/9) — V5 DA Stage 2 success on eMMC, not Crumpet.
 - [Crumpet DA2 handoff and 256 MiB DRAM analysis](../docs/da2-handoff-status-memory.md) — normal-boot UART memory map, USB status decoding, exception semantics.
