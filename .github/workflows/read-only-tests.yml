@@ -18,6 +18,8 @@ jobs:
         uses: actions/setup-python@v5
         with:
           python-version: '3.12'
+      - name: Install optional disassembler dependency
+        run: python -m pip install 'capstone>=4,<6'
       - name: Compile all Python tools
         run: python -m compileall -q scripts tests
       - name: Run synthetic, firmware-free unit tests
