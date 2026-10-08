@@ -150,8 +150,8 @@ def verify_binary(e, directory):
     assert_slot = pc_literal(da2, profile["entry"])
     if assert_slot != slot:
         raise ValueError("kmain no longer dereferences saved caller R0")
-    expect(da2, profile["entry"]+0x08 if e["filename"].startswith("MTK_DA_V5")
-           else profile["entry"]+0x04, "movs", f"r2, #{profile['copy_size']:#x}")
+    expect(da2, profile["entry"]+0x04, "movs",
+           f"r2, #{profile['copy_size']:#x}")
     copy_dst_ldr = profile["entry"]+6 if e["filename"].startswith("MTK_DA_V5") else profile["entry"]+6
     if pc_literal(da2, copy_dst_ldr) != profile["copy_dst"]:
         raise ValueError("kmain argument struct destination moved")
@@ -201,7 +201,7 @@ def verify_binary(e, directory):
             raise ValueError("DA2 V5 framed transport wrapper changed")
         if word(da2, profile["frame_literal"]) != MAGIC_PROTOCOL:
             raise ValueError("DA2 V5 protocol framing magic changed")
-        expect(da2, profile["frame_sender"]+0x0A, "movs", "r3, #1")
+        expect(da2, profile["frame_sender"]+0x0C, "movs", "r3, #1")
         expect(da2, profile["frame_sender"]+0x24, "movs", "r1, #0xc")
     else:
         # Alternative send wrapper materializes 0xFEEEEEEF using MOVW/MOVT.
