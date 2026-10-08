@@ -6,7 +6,8 @@ import unittest
 from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).resolve().parents[1] / "scripts"))
-from audit_mtkclient_da_metadata import parse_loader, scan_directory
+from audit_mtkclient_da_metadata import (parse_loader, scan_directory,
+                                         eligible_for_device, select_for_device)
 
 
 def artificial_loader(path, hw_code=0x8167, hw_subcode=0x8A00,
@@ -73,6 +74,31 @@ class DAMetadataTests(unittest.TestCase):
             self.assertEqual(len(matches), 2)
             self.assertEqual(len(chosen), 2)
             self.assertEqual(len(ignored), 0)
+
+    def test_older_da_hwver_is_accepted_on_cb00_with_sw1(self):
+        with tempfile.TemporaryDirectory() as temp:
+            path = Path(temp) / "MTK_DA_V5.bin"
+            artificial_loader(path, hw_subcode=0x8A00, hw_version=0xCA00)
+            _, retained, _ = scan_directory(Path(temp))
+            selected = select_for_device(retained, 0xCB00, 0x0001)
+            self.assertEqual(selected["filename"], "MTK_DA_V5.bin")
+            self.assertNotEqual(selected["hw_version"], 0xCB00)
+            self.assertNotEqual(selected["sw_version"], 0x0001)
+
+    def test_newer_da_is_not_selected_for_older_device(self):
+        with tempfile.TemporaryDirectory() as temp:
+            path = Path(temp) / "MTK_DA_V5.bin"
+            artificial_loader(path, hw_version=0xCB00)
+            _, retained, _ = scan_directory(Path(temp))
+            self.assertIsNone(select_for_device(retained, 0xCA00, 0))
+
+    def test_subcode_is_not_part_of_upstream_version_filter(self):
+        with tempfile.TemporaryDirectory() as temp:
+            path = Path(temp) / "MTK_DA_V5.bin"
+            artificial_loader(path, hw_subcode=0x8A00)
+            _, retained, _ = scan_directory(Path(temp))
+            self.assertTrue(eligible_for_device(retained[0], 0xCA00, 0))
+            self.assertNotEqual(retained[0]["sub_code"], 0x8B00)
 
     def test_missing_loader_directory_rejected(self):
         with tempfile.TemporaryDirectory() as temp:
