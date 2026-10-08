@@ -66,6 +66,34 @@ class NandGptTests(unittest.TestCase):
                 r = inspect_image(synthetic_nand(copy=i))
                 self.assertEqual(r["brlyt_matches_gpt_copy"], f"brhgptpl_{i}")
 
+    def test_2019_archive_container_offset_layout(self):
+        # Manufactured copy of the same metadata at the archived 2019 file
+        # offsets: BRLYT 0xC00, GPT 0x2400, table 0x3000, GFH 0x6000.
+        modern = synthetic_nand()
+        old = bytearray(0x9000)
+        old[:0x200] = modern[:0x200]
+        old[0xC00:0xC28] = modern[0x1000:0x1028]
+        old[0x2400:0x245C] = modern[0x3000:0x305C]
+        old[0x3000:0x4000] = modern[0x4000:0x5000]
+        old[0x6000:0x6004] = b"MMM\\x01"
+        result = inspect_image(bytes(old))
+        self.assertEqual(result["gfh_offset"], 0x6000)
+        self.assertEqual(result["gpt_offset"], 0x2400)
+        self.assertEqual(result["entries_offset"], 0x3000)
+        self.assertEqual(result["brlyt_matches_gpt_copy"], "brhgptpl_0")
+        self.assertEqual(result["partitions"], inspect_image(modern)["partitions"])
+
+    def test_2019_and_modern_wrappers_not_direct_byte_comparable(self):
+        modern = synthetic_nand()
+        old = bytearray(0x9000)
+        old[:0x200] = modern[:0x200]
+        old[0xC00:0xC28] = modern[0x1000:0x1028]
+        old[0x2400:0x245C] = modern[0x3000:0x305C]
+        old[0x3000:0x4000] = modern[0x4000:0x5000]
+        old[0x6000:0x6004] = b"MMM\\x01"
+        with self.assertRaisesRegex(ValueError, "container layouts differ"):
+            classify_differences(bytes(old), modern)
+
     def test_header_crc_rejects_tampering(self):
         b = bytearray(synthetic_nand())
         b[0x3008] ^= 1
