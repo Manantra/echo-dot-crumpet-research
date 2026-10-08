@@ -48,7 +48,7 @@ Some unchanged regions exist. For example, bytes `2019[0x6320:0x6C00]` equal `20
 
 The hardcoded upstream Crumpet DA-verification patch address `0x00217F2C` maps to text in the 2019 image using several *unverified* header-based mappings; corresponding simple mappings in the 2021 image show instruction-like data. That does not demonstrate executable runtime mapping or exploit compatibility.
 
-**Key distinction:** 2021 preloader material is now demonstrably obtainable from the official OTA; the frequently reported **2023** preloader binary remains unavailable for a direct code comparison.
+**Update:** 2021 preloader material is demonstrably obtainable from the official OTA. We later also obtained OTA preloader images with the **2023 build string** from official 2025 packages. See [verified 2021–2025 timeline](verified-preloader-timeline.md). They are not proved bitwise identical to the separately reported community device dump.
 
 ## Reproduction without exporting copyrighted firmware
 
