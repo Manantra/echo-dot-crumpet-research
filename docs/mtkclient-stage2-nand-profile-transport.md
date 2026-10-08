@@ -74,6 +74,10 @@ python3 -m unittest discover -s tests -q
 
 Ten manufactured-source/packet tests check branch differentiation and detection of the absent abort case, the deferred reconnect and timeout argument's actual meaning. **The tests do not access a USB port or send any Download Agent.**
 
+## Important follow-up: runtime argument magic and correctly framed XFLASH SYNC (2026-10-09)
+
+[New original DA2 ARM/Thumb disassembly and reproducible paired-code audit](mt8167-da2-bootstrap-r0-magic-sync.md) identifies a definite software missing-response gate **before** DA2 protocol initialization: both DA1 contain `0xFE4A4D42` in their executable bodies; both DA2 begin by saving incoming `R0` at `0x40000020` and copying 88/64 bytes to BSS. `bootstrap2` checks that magic and **infinite-loops on mismatch**. On the normal branch, platform init and command setup precede a genuine **12-byte framed XFLASH header with 4-byte SYNC payload**. Hence a bare-SYNC mismatch is not a suitable generic explanation; the exact live Crumpet failed stage is still unobserved.
+
 ## 4. Additional DA2 entry/startup difference
 
 The two MT8167 bundled DA2 bodies share the same ARM32 entry branch and bootstrapping instructions through file offset `0xF0`. At **`0x400000F4`**, their first direct next-stage call differs:
