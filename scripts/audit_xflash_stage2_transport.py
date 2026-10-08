@@ -27,7 +27,10 @@ def method_from_file(text, cls, name):
 
 
 def walk_calls(node):
-    return [n for n in ast.walk(node) if isinstance(n, ast.Call)]
+    # ast.walk() uses breadth-first traversal, not lexical execution order.
+    # Use source line/column ordering for the boot_to versus reinit check.
+    return sorted((n for n in ast.walk(node) if isinstance(n, ast.Call)),
+                  key=lambda n: (n.lineno, n.col_offset))
 
 
 def call_tail(c):
