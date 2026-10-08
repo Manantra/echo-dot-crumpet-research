@@ -2,6 +2,8 @@
 
 - [R0rt1z2/amonet-koboreru](https://github.com/R0rt1z2/amonet-koboreru) — exploit source, **untested** Crumpet support.
 - [Crumpet patch source](https://github.com/R0rt1z2/amonet-koboreru/blob/main/devices/crumpet.c).
+- [Crumpet Amonet `PART_GET_ADDR` Thumb-2 middle-halfword proof](../docs/crumpet-amonet-part-get-thumb2-misalignment.md) — pinned device C header and official 2021/2022/2025 raw boot images.
+- [Crumpet MT8167 TWRP source tree](https://github.com/R0rt1z2/twrp_device_amazon_echo-mt8167) and [source/NAND audit](../docs/crumpet-twrp-emmc-vs-nand-audit.md) — published source is not a boot-tested raw-NAND recovery implementation.
 - [Crumpet Amonet nonreturning USBDL / missing `expdb` GPT / donor-image blocker](../docs/amonet-crumpet-unreachable-lk-and-expdb.md) — pinned upstream original C control flow and two independently CRC-verified Crumpet GPTs.
 - [Read-only original-source and GPT boot-flow validator](../scripts/audit_amonet_crumpet_boot_flow.py) — checks default USB branch, call order and actual GPT partition names.
 - [Crumpet ARM bootstrap BSS-zeroing and Thumb-handoff verification](../docs/crumpet-arm-bootstrap-memory-map.md) — 17 exact A32 instructions and embedded SRAM/Thumb constants across 2019–2025.
