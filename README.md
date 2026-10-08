@@ -10,6 +10,7 @@ Public, community-oriented **read-only reverse-engineering research** for the Am
 - Public [Crumpet UART logs](https://github.com/jvandewiel/no-alexa/tree/main/logicanalyzer/uart_logs) cover 2019 and 2021 preloaders.
 - A [2019 raw-NAND excerpt](https://github.com/jvandewiel/no-alexa/blob/main/dumped_files/brhgptpl_0.bin) is available. Whole-file SHA-256: `e51970de327ec58ba32ee506b7b1358ff7877e43672be833f5d6a7c2b2a68637`.
 - **New (2026-10-08):** We verified and extracted **four March 2021 Crumpet preloader images** from Amazon's Fire OS 6.5.4.8 OTA, with their SHA-256 checksums validated against the official update manifest. [Full analysis](docs/ota-2021-analysis.md).
+- **New hard DA2 evidence (2026-10-09):** The default `MTK_DA_V5.bin` executable Stage-2 image contains an **exact lookup-table record** for the historical Crumpet **Macronix MX30LF4G28AD** NAND: a valid RAM name pointer, ID `C2 DC 90 A2 57 03`, ID-length 6, **4096-byte data pages and 256-byte OOB**. The alternate MT8167 DA lacks that exact record. A separate upstream AST audit proves `boot_to(timeout=0.5)` only sleeps, `send_data` can loop forever after write failure, and **USB reconnection is deferred until Stage-2 already succeeds**. An empty 12-byte status read produces the misleading generic DRAM line. [Exact bytes, protocol analysis and open questions](docs/mtkclient-stage2-nand-profile-transport.md). **This is not DA2 success or root.**
 - **Latest verified root/unlock feasibility (2026-10-09):** The 2019 public Crumpet image has **three additional independently confirmed invalid Amonet function pointers** under its stored-image RAM mapping: `part_get` lands midway through a Thumb-2 instruction, and two TEE-function pointers land **inside actual null-terminated error/training strings**. Same security-related GFH records are byte-identical across 2019/2021/2025, **but that does not establish safe signed downgrade**. The historical NAND chip is identified as Macronix MX30LF4G28AD (4096+256-byte pages); read-only geometry checks are now available. [Concrete root options and missing validation steps](docs/crumpet-root-unlock-feasibility-2026-10-09.md).
 - **Further verified Crumpet Amonet blocker (2026-10-09):** `PART_GET_ADDR=0x20F250` points **inside a 32-bit Thumb-2 instruction** (second halfword) in independently manifest-hash-verified official **2022 and Nov-2025** preloader images. In 2021 it lands at an instruction boundary but **not at an established function entry**. [Exact byte/instruction evidence](docs/crumpet-amonet-part-get-thumb2-misalignment.md). This makes the hardcoded function-pointer assumptions substantially less credible without a live RAM map.
 - **New 2026 Crumpet TWRP device tree reviewed:** a Crumpet target and prebuilt ARM kernel exist, but shared recovery fstab and init use **eMMC-specific paths**. Five by-name labels are absent from the verified *early NAND GPT*, no built `recovery.img` or successful Crumpet TWRP boot log was established. [Read-only compatibility audit](docs/crumpet-twrp-emmc-vs-nand-audit.md).
@@ -34,6 +35,7 @@ Public, community-oriented **read-only reverse-engineering research** for the Am
 ## Where to start
 
 - [Research status and evidence levels](STATUS.md)
+- **[DA2 breakthrough: exact MX30LF4G28AD NAND table match and USB Stage-2 status/reconnect audit](docs/mtkclient-stage2-nand-profile-transport.md)**
 - **[Current Crumpet root/unlock feasibility: exact blockers, BROM/Kamakiri entry, downgrade limits, NAND backup requirements](docs/crumpet-root-unlock-feasibility-2026-10-09.md)**
 - **[2019 Crumpet Amonet TEE function pointers resolve to ASCII literals](scripts/audit_2019_amonet_string_pointer_collisions.py)**
 - **[2019/2021/2025 Preloader GFH signing/security metadata comparator](scripts/audit_crumpet_preloader_gfh_security.py)**
@@ -110,6 +112,9 @@ python3 scripts/audit_crumpet_preloader_gfh_security.py /path/to/2019.bin /path/
 python3 scripts/audit_2019_amonet_string_pointer_collisions.py /path/to/amonet/include/devices/crumpet.h /path/to/public-2019.bin
 # Existing device-authorized NAND dump file: file size only, NO ECC/restore claim
 python3 scripts/check_crumpet_raw_nand_dump_size.py /path/to/local-dump.bin
+# Inspect SHA-pinned MT8167 DA2 NAND lookup table and diagnostic USB source (NO device)
+python3 scripts/audit_da2_crumpet_nand_profile.py /path/to/mtkclient/mtkclient/Loader
+python3 scripts/audit_xflash_stage2_transport.py /path/to/mtkclient/mtkclient/Library/DA/xflash/xflash_lib.py /path/to/mtkclient/mtkclient/Library/Connection/usblib.py
 python3 scripts/audit_da_stage2.py /path/to/mtkclient/mtkclient/Loader
 python3 scripts/audit_preloader_emi.py /path/to/local-crumpet-preloader.bin
 python3 -m unittest discover -s tests -v
