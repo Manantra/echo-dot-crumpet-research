@@ -29,8 +29,16 @@ NAND_ID = b"NFIINFO\0"
 
 
 def inspect_image(data):
-    if len(data) < GFH + 0x38:
-        raise ValueError("Image too short for MTK NAND/GPT/GFH container")
+    gfh_offset = data.find(b"MMM\x01")
+    # Both historical container packings are empirically verified: the
+    # archived 2019 Crumpet excerpt uses 0xC00-spaced landmarks, while
+    # the 2021–2025 official OTAs use 0x1000-spaced landmarks.
+    if gfh_offset not in (0x6000, 0x8000) or len(data) < gfh_offset + 0x38:
+        raise ValueError("Unrecognized 2019 or 2021+ Crumpet GFH location")
+    layout_unit = gfh_offset // 8
+    brlyt_offset, gpt_offset, entries_offset = (
+        layout_unit, 3 * layout_unit, 4 * layout_unit)
+
     for off in (NAND_HEADER, NAND_HEADER_COPY):
         if (data[off:off + 12] != BOOT_NAME or
                 data[off + 12:off + 16] != NAND_VERSION or
@@ -39,31 +47,31 @@ def inspect_image(data):
     if data[:128] != data[NAND_HEADER_COPY:NAND_HEADER_COPY + 128]:
         raise ValueError("Duplicated MTK NAND header differs")
     ioif, pagesize, addrcycles = struct.unpack_from("<HHH", data, 24)
-    if data[BRLYT:BRLYT + 8] != b"BRLYT\0\0\0":
+    if data[brlyt_offset:brlyt_offset + 8] != b"BRLYT\0\0\0":
         raise ValueError("BRLYT layout marker missing at 0x1000")
     ver, head, total, magic, kind, head2, total2, unused = struct.unpack_from(
-        "<8I", data, BRLYT + 8)
+        "<8I", data, brlyt_offset + 8)
     if ver != 1 or magic != 0x42424242 or kind != 0x10002:
         raise ValueError("Not a recognized MTK NAND BRLYT layout")
     if head != head2 or total != total2:
         raise ValueError("Redundant BRLYT fields disagree")
-    if data[GPT:GPT + 8] != b"EFI PART":
+    if data[gpt_offset:gpt_offset + 8] != b"EFI PART":
         raise ValueError("Embedded GPT signature missing")
-    revision, headersize, headercrc = struct.unpack_from("<III", data, GPT + 8)
+    revision, headersize, headercrc = struct.unpack_from("<III", data, gpt_offset + 8)
     if not 92 <= headersize <= 512:
         raise ValueError("Unreasonable GPT header size")
-    header = bytearray(data[GPT:GPT + headersize])
+    header = bytearray(data[gpt_offset:gpt_offset + headersize])
     header[16:20] = b"\x00" * 4
     if zlib.crc32(header) != headercrc:
         raise ValueError("Embedded GPT header CRC32 failed")
     current_lba, backup_lba, first_usable, last_usable = struct.unpack_from(
-        "<QQQQ", data, GPT + 0x18)
+        "<QQQQ", data, gpt_offset + 0x18)
     entry_lba, nentries, entrysize, entrycrc = struct.unpack_from(
-        "<QIII", data, GPT + 0x48
+        "<QIII", data, gpt_offset + 0x48
     )
-    if nentries < 1 or entrysize != 128 or nentries * entrysize > GFH - ENTRIES:
+    if nentries < 1 or entrysize != 128 or nentries * entrysize > gfh_offset - entries_offset:
         raise ValueError("Unsupported embedded GPT entry table bounds")
-    block = data[ENTRIES:ENTRIES + nentries * entrysize]
+    block = data[entries_offset:entries_offset + nentries * entrysize]
     if zlib.crc32(block) != entrycrc:
         raise ValueError("Embedded GPT entry table CRC32 failed")
     partitions = []
@@ -84,7 +92,7 @@ def inspect_image(data):
             "last_lba": high, "attributes": flags,
             # public OTA unique GUID bytes never emitted
         })
-    if data[GFH:GFH + 4] != b"MMM\x01":
+    if data[gfh_offset:gfh_offset + 4] != b"MMM\x01":
         raise ValueError("No GFH image at offset 0x8000")
     # The layout values shift by the exact GPT first-LBA offset for the
     # corresponding brhgptpl partition. Verify rather than guess which
@@ -102,13 +110,17 @@ def inspect_image(data):
         "brlyt_first": head, "brlyt_second": total,
         "brlyt_matches_gpt_copy": matching_copies[0] if len(matching_copies) == 1 else None,
         "gpt_revision": revision,
+        "gfh_offset": gfh_offset,
+        "brlyt_offset": brlyt_offset,
+        "gpt_offset": gpt_offset,
+        "entries_offset": entries_offset,
         "gpt_current_lba": current_lba,
         "gpt_backup_lba": backup_lba,
         "gpt_first_usable": first_usable, "gpt_last_usable": last_usable,
         "gpt_entries_lba": entry_lba, "gpt_nentries": nentries,
         "gpt_entrysize": entrysize, "gpt_entries_used": len(partitions),
         "partitions": partitions,
-        "gfh_sha256": hashlib.sha256(data[GFH:]).hexdigest(),
+        "gfh_sha256": hashlib.sha256(data[gfh_offset:]).hexdigest(),
     }
 
 
@@ -117,23 +129,27 @@ def classify_differences(a, b):
     left, right = inspect_image(a), inspect_image(b)
     if len(a) != len(b):
         raise ValueError("Partition image sizes differ")
+    if left["gfh_offset"] != right["gfh_offset"]:
+        raise ValueError("Historical image container layouts differ; not byte-comparable")
+    brlyt_offset, gpt_offset, entries_offset = (
+        left["brlyt_offset"], left["gpt_offset"], left["entries_offset"])
     categories = {key: 0 for key in (
         "brlyt_copy_fields", "gpt_header_crc", "gpt_disk_guid",
         "gpt_partition_array_crc", "gpt_unique_partition_guids", "other")}
     for offset, (x, y) in enumerate(zip(a, b)):
         if x == y:
             continue
-        if offset in range(BRLYT + 0x0C, BRLYT + 0x14) or offset in range(
-                BRLYT + 0x1C, BRLYT + 0x24):
+        if offset in range(brlyt_offset + 0x0C, brlyt_offset + 0x14) or offset in range(
+                brlyt_offset + 0x1C, brlyt_offset + 0x24):
             category = "brlyt_copy_fields"
-        elif offset in range(GPT + 0x10, GPT + 0x14):
+        elif offset in range(gpt_offset + 0x10, gpt_offset + 0x14):
             category = "gpt_header_crc"
-        elif offset in range(GPT + 0x38, GPT + 0x48):
+        elif offset in range(gpt_offset + 0x38, gpt_offset + 0x48):
             category = "gpt_disk_guid"
-        elif offset in range(GPT + 0x58, GPT + 0x5C):
+        elif offset in range(gpt_offset + 0x58, gpt_offset + 0x5C):
             category = "gpt_partition_array_crc"
-        elif ENTRIES <= offset < ENTRIES + left["gpt_nentries"] * 128 and (
-                (offset - ENTRIES) % 128) in range(16, 32):
+        elif entries_offset <= offset < entries_offset + left["gpt_nentries"] * 128 and (
+                (offset - entries_offset) % 128) in range(16, 32):
             category = "gpt_unique_partition_guids"
         else:
             category = "other"
@@ -164,6 +180,9 @@ def main():
     print("BRLYT values match GPT boot partition:",
           info["brlyt_matches_gpt_copy"] or "NO VERIFIED MATCH")
     print("Embedded GPT header and partition-array CRC32: BOTH VALID")
+    print("GFH/GPT/container offsets:",
+          hex(info["gfh_offset"]), hex(info["gpt_offset"]),
+          hex(info["entries_offset"]))
     print("GPT revision", hex(info["gpt_revision"]),
           "entries", info["gpt_nentries"], "used", info["gpt_entries_used"])
     print("GPT current/backup/usable:",
