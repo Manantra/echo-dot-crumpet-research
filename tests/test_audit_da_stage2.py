@@ -15,6 +15,14 @@ def fake_arm_loader(path, stage2_bytes=0x300, nand=True):
     raw = bytearray(path.read_bytes())
     struct.pack_into("<I", raw, 0x300, 0xEAFFFFFF)  # B from +0 to +4
     struct.pack_into("<I", raw, 0x400, 0xEA000007)  # B from +0 to +0x24
+    # Minimal manufactured DA2 zeroing loop and BSS literal bounds.
+    for offset, word in ((0xD4, 0xE59F0040),
+                         (0xD8, 0xE59F1040),
+                         (0xE0, 0xE1500001),
+                         (0xE4, 0xB4802004),
+                         (0x11C, 0x40000300),
+                         (0x120, 0x40000400)):
+        struct.pack_into("<I", raw, 0x400 + offset, word)
     if nand:
         raw[0x430:0x436] = b"[BMT]\x00"
         raw[0x440:0x44A] = b"device_nand"
@@ -32,6 +40,8 @@ class Stage2Tests(unittest.TestCase):
             self.assertEqual(entries[0]["stage1"]["entry"], 0x200004)
             self.assertEqual(entries[0]["stage2"]["entry"], 0x40000024)
             self.assertGreater(entries[0]["stage2"]["markers"]["Bad-block management"], 0)
+            self.assertEqual(entries[0]["stage2"]["bss_interval"],
+                             (0x40000300, 0x40000400))
 
     def test_entry_non_arm_branch_rejected(self):
         with tempfile.TemporaryDirectory() as folder:
@@ -43,6 +53,17 @@ class Stage2Tests(unittest.TestCase):
             path.write_bytes(raw)
             with self.assertRaisesRegex(ValueError, "ARM unconditional B"):
                 inspect_directory(directory)
+
+    def test_prologue_change_disables_bss_inference(self):
+        with tempfile.TemporaryDirectory() as folder:
+            directory = Path(folder)
+            path = directory / "MTK_DA_V5.bin"
+            fake_arm_loader(path)
+            data = bytearray(path.read_bytes())
+            struct.pack_into("<I", data, 0x400 + 0xD4, 0)
+            path.write_bytes(data)
+            entries, _ = inspect_directory(directory)
+            self.assertIsNone(entries[0]["stage2"]["bss_interval"])
 
     def test_identical_arm_entry_does_not_imply_identical_da(self):
         with tempfile.TemporaryDirectory() as folder:
