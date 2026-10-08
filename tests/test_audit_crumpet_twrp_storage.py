@@ -20,6 +20,7 @@ def write_tree(root, emmc=True):
             "/boot_a emmc /dev/block/platform/bootdevice/by-name/boot_a\n"
             "/system_a ext4 /dev/block/platform/bootdevice/by-name/system_a\n"
             "/cache ext4 /dev/block/platform/bootdevice/by-name/cache\n"
+            "/lk_a emmc /dev/block/platform/bootdevice/by-name/lk_a\n"
             + ("/boot0 emmc /dev/block/mmcblk0boot0\n" if emmc else ""),
         "recovery/root/fstab.device": "/dev/block/sda /misc emmc defaults defaults\n",
         "recovery/root/init.recovery.mt8167.rc":
@@ -45,9 +46,9 @@ class TwrpStorageTests(unittest.TestCase):
             facts = inspect_tree(root, synthetic_nand())
             self.assertEqual(facts["target"], "crumpet")
             self.assertEqual(facts["fstab_labels_absent_from_early_gpt"],
-                             ["cache", "system_a"])
+                             ["boot_a", "cache", "system_a", "userdata"])
             self.assertEqual(facts["fstab_labels_present_in_early_gpt"],
-                             ["boot_a"])
+                             ["lk_a"])
             self.assertTrue(facts["source_emmc_features"]["kernel_boot_partition"])
             self.assertTrue(facts["source_emmc_features"]["mmc_bus_symlink"])
             self.assertFalse(facts["has_built_crumpet_recovery_image"])
