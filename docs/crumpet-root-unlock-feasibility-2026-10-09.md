@@ -100,7 +100,31 @@ Thus, *only for that chip geometry*, a **fully interleaved, unfiltered main+OOB 
 
 The new [read-only NAND dump geometry checker](../scripts/check_crumpet_raw_nand_dump_size.py) calls **`stat()` only** on an already existing local file, distinguishes the two full sizes, and explicitly refuses to certify a restore. **Never clone `idme_nand`, `persist`, keys or device-unique calibration from another unit.**
 
-## 6. Safe evidence needed to establish a real root/unlock breakthrough
+## 6. Device-owner first checks that do **not** flash or alter hardware state
+
+These commands are **observational only** and apply when the owner already has a *properly wired, electrically safe data connection*. Crumpet reportedly uses independent **12V power** plus data-only USB (historical owner report), unlike micro-USB-powered `biscuit`. **Do not connect 12V to USB pins, short test points or solder on a powered unit.** No universal button combination is guaranteed; owner reports differ by board.
+
+On a Linux machine that already detects a factory/owner-installed USB interface, one may observe USB enumeration without sending a Download Agent:
+
+```sh
+lsusb -d 0e8d:0003   # MTK BROM if present, often briefly
+lsusb -d 0e8d:2000   # MTK preloader USB, NOT BROM
+lsusb -d 0bb4:0c01   # historically reported Crumpet Fastboot USB
+```
+
+If an authorized Crumpet is already in Fastboot and has a usable **data** link, these are **read-only** information commands; their support/response differs by firmware:
+
+```sh
+fastboot getvar product
+fastboot getvar version-preloader
+fastboot getvar secure
+```
+
+Redact any serial numbers or hardware identifiers from logs before sharing. **Do not** use `fastboot flash`, `fastboot flashing unlock`, `mtk da seccfg unlock`, `mtk w`, arbitrary testpoint shorts, unsigned DA uploads or any BROM RAM-write experiment on a device without proven recovery. Even a command advertised as a diagnostic can affect a device; review it first.
+
+**Interpretation:** `0e8d:0003` would confirm **BROM enumeration only**, not Kamakiri success, DA Stage-2, unlocked bootloader or Linux root. `0e8d:2000` means the Preloader USB interface, not the ROM exploit. An absence of BROM USB is not proof that all board revisions are unexploitable.
+
+## 7. Safe evidence needed to establish a real root/unlock breakthrough
 
 We can now state a precise and falsifiable validation bar instead of generic "root coming soon":
 
