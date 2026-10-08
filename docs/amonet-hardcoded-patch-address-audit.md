@@ -88,6 +88,14 @@ The older 2021/2022 binaries do contain an older overlap diagnostic, while the 2
 
 **No working Crumpet root/unlock confirmed. Do not apply these addresses to a device.** Neither the new [read-only patch-site auditor](../scripts/audit_amonet_patch_sites.py) nor its tests write firmware, generate an exploit payload, or contact hardware.
 
+## 5. New October 2026 public claim: LibreEcho's roadmap is **not** independent proof of a Crumpet unlock
+
+The [LibreEcho hardware roadmap](https://libreecho.org/) currently labels `crumpet` **"Access implemented"**, but its cited access basis is **`amonet-koboreru`** itself—the same unverified Crumpet port audited here. The LibreEcho homepage and [upstream README](https://github.com/aslater3/LibreEcho) specify that the actual published stable release and one-shot installer target **Echo 2nd Gen / `radar`, not Crumpet**. The matrix explicitly distinguishes access from a finished/validated OS port.
+
+An independent participant [reported on October 3, 2026](https://community.home-assistant.io/t/echo-dot-3rd-gen-2018-as-a-fully-local-assist-satellite-keeping-amazons-mic-array-and-wake-word-engine/1025971/36) that current Crumpet firmware blocked known root methods after static analysis. This is also a **third-party unverified conclusion**, rather than a formal security proof that no vulnerability exists.
+
+**Evidence decision:** The LibreEcho green marker should not be presented as a demonstrated Crumpet success without an actual Crumpet hardware log, firmware/board revision, confirmed DA2/secure-boot state and independently repeatable recovery procedure. Equally, an absence of known root methods does not prove that root is theoretically impossible.
+
 ## Reproduce without writing to hardware
 
 ```bash
