@@ -147,7 +147,7 @@ def main():
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("ota", type=Path, help="Path to downloaded official OTA ZIP")
     parser.add_argument("--verify-bootloaders", action="store_true",
-                        help="Read/decompress brhgptpl_* in memory and check signed-manifest hashes")
+                        help="Read/decompress brhgptpl_* in memory and check payload-manifest hashes (not OTA signature)")
     args = parser.parse_args()
     with zipfile.ZipFile(args.ota) as z:
         partitions, blob_start, block_size, version = parse_manifest(z)
