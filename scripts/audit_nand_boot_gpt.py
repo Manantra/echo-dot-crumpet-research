@@ -86,10 +86,21 @@ def inspect_image(data):
         })
     if data[GFH:GFH + 4] != b"MMM\x01":
         raise ValueError("No GFH image at offset 0x8000")
+    # The layout values shift by the exact GPT first-LBA offset for the
+    # corresponding brhgptpl partition. Verify rather than guess which
+    # redundant boot copy this image describes.
+    matching_copies = [
+        partition["name"] for partition in partitions
+        if partition["name"] in ("brhgptpl_0", "brhgptpl_1",
+                                  "brhgptpl_2", "brhgptpl_3")
+        and head == partition["first_lba"] + 8
+        and total == partition["first_lba"] + 0x108
+    ]
     return {
         "nand_ioif": ioif, "nand_pagesize": pagesize,
         "nand_address_cycles": addrcycles,
         "brlyt_first": head, "brlyt_second": total,
+        "brlyt_matches_gpt_copy": matching_copies[0] if len(matching_copies) == 1 else None,
         "gpt_revision": revision,
         "gpt_current_lba": current_lba,
         "gpt_backup_lba": backup_lba,
@@ -150,6 +161,8 @@ def main():
         info["nand_ioif"], info["nand_pagesize"], info["nand_address_cycles"]))
     print("NAND boot BRLYT: first={:#x} second={:#x}".format(
         info["brlyt_first"], info["brlyt_second"]))
+    print("BRLYT values match GPT boot partition:",
+          info["brlyt_matches_gpt_copy"] or "NO VERIFIED MATCH")
     print("Embedded GPT header and partition-array CRC32: BOTH VALID")
     print("GPT revision", hex(info["gpt_revision"]),
           "entries", info["gpt_nentries"], "used", info["gpt_entries_used"])
