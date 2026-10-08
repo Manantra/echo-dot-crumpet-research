@@ -89,6 +89,8 @@ python3 -m unittest discover -s tests -v
 
 The scanner checks loader record magic, hardware and software identifiers, section sizes, declared SRAM/DRAM addresses, file bounds, and per-file hashes. It predicts deduplication outcomes from the source logic. **It never connects to USB or writes files, devices or firmware.**
 
+**Update (2026-10-08):** We subsequently compared the two DA2 ARM binaries directly and extracted four official Crumpet preloader EMI trailers read-only. All four EMI blocks are **identical** (400 bytes, `MTK_BLOADER_INFO_v28`, SHA-256 `c2a394668216e8bc20959bef29aee38002854a0b38444f6fcd9877fd5d548120`). Both DA2 images branch to `0x40000024` and contain NAND/BMT marker strings, but differ substantially elsewhere. See [DA2 and EMI compatibility report](da2-binary-emi-compatibility.md). This does **not** establish that the observed Stage-2 failure has been fixed.
+
 ## 7. Community-reported hardware states differ
 
 The independent issue reports distinguish:
