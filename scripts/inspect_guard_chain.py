@@ -22,13 +22,18 @@ REGION_REFERENCES = (
 )
 CALL_CHAIN = (
     ("initial 0x200-byte header read", 0x20F3F8, 0x20210C),
+    ("subimage header-field parser", 0x20F420, 0x20F368),
+    ("TEE address-translation mode query", 0x20F476, 0x2160F4),
+    ("conditional address calculation", 0x20F47E, 0x216130),
     ("primary address-range guard", 0x20F490, 0x20F1A0),
     ("larger payload read", 0x20F50E, 0x20210C),
     ("alternate address-range guard", 0x20F68E, 0x20F1A0),
     ("alternate payload read", 0x20F6FE, 0x20210C),
     ("ATF subimage loader", 0x20DF74, 0x20F3AC),
     ("ATF verify/decode candidate", 0x20DF90, 0x216100),
+    ("TEE address mode enabled", 0x20DFB8, 0x2160E8),
     ("TEE subimage loader", 0x20DFC6, 0x20F3AC),
+    ("TEE address mode reset path", 0x20DFE4, 0x2160E8),
     ("TEE verify/decode candidate", 0x20DFEC, 0x216100),
 )
 # Upstream amonet-koboreru include/devices/crumpet.h, not derived from image.
