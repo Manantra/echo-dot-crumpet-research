@@ -12,7 +12,7 @@
 | Download Agent stage 2 | User reports | Fails on tested devices |
 | Crumpet amonet-koboreru port | Author statement | Not tested on actual device |
 | 2019→2021 binary comparison | Both source binaries available | **Initial byte-level comparison performed**; function-level work outstanding |
-| 2019→2023 byte-level comparison | Public 2019 excerpt + 2025 OTA image built in 2023 | **Now possible**; runtime-aligned disassembly still outstanding |
+| 2019→2023 byte-level comparison | Public 2019 excerpt + official OTA image bearing the 2023 build | **Performed:** matching exact byte spans identified; runtime-aligned disassembly still outstanding |
 | Runtime patch-address mapping | File/image wrappers unresolved | Hypothesis only |
 | TWRP for raw NAND Crumpet | Existing shared device tree | Not demonstrated |
 
