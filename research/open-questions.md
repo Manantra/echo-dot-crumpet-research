@@ -7,6 +7,6 @@
 5. Explain the BROM/MTKClient DA stage 2 failure without writing anything.
 6. Investigate why upstream Crumpet specifies `expdb` where a logged partition table lacks it.
 7. Determine whether a raw-NAND-specific TWRP port is possible and recoverable.
-8. Verify whether the updated overlap guard actually rejects the malformed-header condition assumed in the public exploit; do not equate a changed routine with proof of a security fix.
+8. **Partly resolved:** the updated guard's encoded BSS interval `[0x00102180,0x00109DAC)` contains the published payload's BDEV target `0x001086EC`; its `0x00108804` data extent would overlap protected BSS if the effective destination is zero. [Static source/bin check](../docs/sram-guard-exploit-intersection.md). **Still open:** verify exact `0xFFFFFFFF` header-address fallback and length propagation to `0x20F490` on all paths, including early reads; do not assume exploitability or full mitigation without this proof.
 
 No destructive testing without a validated recovery mechanism.
