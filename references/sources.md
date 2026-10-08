@@ -2,6 +2,8 @@
 
 - [R0rt1z2/amonet-koboreru](https://github.com/R0rt1z2/amonet-koboreru) — exploit source, **untested** Crumpet support.
 - [Crumpet patch source](https://github.com/R0rt1z2/amonet-koboreru/blob/main/devices/crumpet.c).
+- [MTKClient (pinned 2026-09-12 code)](https://github.com/bkerler/mtkclient/tree/cd25cf9) — hardware 0x8167 XFLASH mapping, DRAM response semantics, stage-2 exception and DA version selection.
+- [Our MTKClient Stage-2 forensic report](../docs/mtkclient-da-stage2-analysis.md) — host status messages, two DA binaries, duplicate-selection finding and read-only reproduction.
 - [Upstream issue #2](https://github.com/R0rt1z2/amonet-koboreru/issues/2) — maintainer's NAND/recovery warning and community BROM/DA tests.
 - [Public 2019 NAND excerpt](https://github.com/jvandewiel/no-alexa/blob/main/dumped_files/brhgptpl_0.bin).
 - [2019 Crumpet UART log](https://github.com/jvandewiel/no-alexa/blob/main/logicanalyzer/uart_logs/uart_normal_oldsw.txt).
