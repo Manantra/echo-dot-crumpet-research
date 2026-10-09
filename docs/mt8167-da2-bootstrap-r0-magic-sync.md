@@ -82,6 +82,10 @@ This **agrees** with the original [MTKClient `status()` / `boot_to()`](https://g
 
 The subsequent calls at `0x40001E96` or `0x400014F4` enter per-version protocol/command processing. Whether those loops ever run on a particular Crumpet unit has not been established.
 
+## Addendum (2026-10-09): actual BROM EMI selection and old Preloader parser bug
+
+[New SHA-pinned original method + firmware study](crumpet-emi-2019-layout-and-brom-nand-gap.md) identifies **two earlier host preparation traps**: XFLASH BROM auto-discovery searches by eMMC CID instead of Crumpet raw-NAND ID when no EMI is supplied; the public 2019 Preloader's GFH-trimmed last word is `0xffffffff`, which makes upstream `DAconfig.m_extract_emi()` return an **incorrect 37152-byte object with `emiver=28`** even though a valid **400-byte identical Crumpet v28 EMI record** sits in the file. Modern 2021/2025 Preloaders return the correct same 400B offline. This can explain **incompatible Stage1 DRAM preparation hypotheses**, not a proven runtime Crumpet Stage2 stall. The DA2 runtime parameter magic check remains a distinct, later possible failure mechanism.
+
 ## 3. Stronger diagnostic discrimination for an already-captured Crumpet session
 
 The combination of this binary study and the prior [host transport audit](mtkclient-stage2-nand-profile-transport.md) produces **four distinct possibilities**, none yet selected by actual Crumpet registers or UART timing:
