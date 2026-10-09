@@ -132,6 +132,10 @@ The upstream Python host `boot_to(timeout=0.5)` parameter is a **sleep before st
 
 **Consequent next investigation:** differentiate DA2 execution vs USB status transport using pre-existing redacted host logs and USB device-event timing, rather than assuming the NAND device is unknown or flashing a different DA.
 
+## New Crumpet BROM/EMI finding: a genuine 2019 parser mismatch, not missing hardware profile
+
+[Full upstream source and original firmware-data audit](crumpet-emi-2019-layout-and-brom-nand-gap.md) shows that the embedded `MTK_BLOADER_INFO_v28` **400-byte EMI block has identical SHA-256 `c2a394...` in verified public 2019, official 2021 and Nov-2025 Crumpet Preloaders**, contrary to suspicion that donor-era EMI differs. The original MTKClient parser incorrectly produces a **37152-byte `emiver=28` blob** from the FF-padded public 2019 GFH layout, while extracting exactly 400B from 2021/2025. Its automatic missing-EMI BROM branch matches by **eMMC CID** and does not query raw-NAND chip IDs; it can continue into Stage2 lacking suitable DRAM initialization. This is a reproducible host-side defect and diagnostic lead, **not** a fix proven on Crumpet hardware. No DA2 run/root/unlock is demonstrated, and raw-NAND writes remain unsafe without validated recovery.
+
 ## New Stage-2 root-research narrowing (2026-10-09): DA1 runtime argument magic
 
 The [complete pinned DA1→DA2 R0/magic/SYNC instruction contract](mt8167-da2-bootstrap-r0-magic-sync.md) shows DA2 receives a live parameter pointer in CPU register `R0`, saves it at `0x40000020`, then copies a DA-specific 88-byte or 64-byte parameter struct into BSS. `bootstrap2` checks magic `0xFE4A4D42`, **deliberately infinite-loops if absent**, and only later notifies the host via a properly framed XFLASH `SYNC`. This is a concrete, previously missing possible Stage-2 timeout mechanism even when DA2 entry code is reached. No actual Crumpet R0/memory/USB trace has confirmed this diagnosis. Do not upload alternative DA2 images or cross-pair the DA binaries based solely on this finding.
