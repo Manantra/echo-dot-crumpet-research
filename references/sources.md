@@ -2,6 +2,8 @@
 
 - [R0rt1z2/amonet-koboreru](https://github.com/R0rt1z2/amonet-koboreru) — exploit source, **untested** Crumpet support.
 - [Crumpet patch source](https://github.com/R0rt1z2/amonet-koboreru/blob/main/devices/crumpet.c).
+- [Crumpet 2019 FF-padded EMI parse failure and BROM eMMC-only auto-discovery](../docs/crumpet-emi-2019-layout-and-brom-nand-gap.md) — real original XFLASH `m_extract_emi()` against pinned Amazon/public Preloaders, 400B shared hash, no DA upload.
+- [Hash-pinned read-only Crumpet EMI source/parser audit](../scripts/audit_crumpet_emi_fallback.py) — exact extracted lengths/hashes and AST auto-selection behavior; no binary export.
 - [Verified DA1→DA2 ARM/Thumb bootstrap parameter, magic-validation and framed SYNC response contract](../docs/mt8167-da2-bootstrap-r0-magic-sync.md) — both SHA-pinned MT8167 agents, static function-pointer tracing, no device execution.
 - [Read-only instruction-verified DA2 bootstrap contract auditor](../scripts/audit_da2_bootstrap_contract.py) — checks R0 slot, 88/64-byte copy, fatal magic self-loop and framed status construction without binary redistribution.
 - [Exact historical Crumpet NAND lookup record in V5 MT8167 DA2, Stage-2 transport study](../docs/mtkclient-stage2-nand-profile-transport.md) — SHA-pinned stock MTKClient DA binaries and original XFLASH/USB host code, no execution.
