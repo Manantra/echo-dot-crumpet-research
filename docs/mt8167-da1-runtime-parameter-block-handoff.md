@@ -52,6 +52,10 @@ Earlier [DA2-only disassembly](mt8167-da2-bootstrap-r0-magic-sync.md) identified
 
 The second original DA differs in addresses and transfer counts but follows the **same logical construction**. This relationship was established by **actual Thumb instruction decoding and PC-relative literal resolution**, not by scanning only for the magic constant.
 
+## Follow-up (2026-10-10): DA1 integrity acknowledgment is distinct from DA2 boot `SYNC`
+
+The [opcode- and host-AST-verified DA1 SHA-1/status report](da1-sha1-status-vs-da2-sync-ack.md) now shows that DA1 compares a 20-byte digest against an embedded SHA-1 for its own DA2 and emits `0xC0070004` on mismatch. Original `send_data()` returns True **only when the first framed DA1 status is 0**, so `Upload data was accepted...` does **not** report an *already returned* DA1 hash rejection. **It also does NOT confirm DA2 executed:** host awaits a separate `SYNC` frame after the indirect jump. The jump/copy register ABI described here is still unobserved on physical Crumpet RAM; the artifact is offline-only.
+
 ## 2. What this corrects about the suspected bad-magic Stage-2 hang
 
 The previous analysis found a **real possible DA2 error condition**: if the copied parameter block's first word is **not** `0xFE4A4D42`, the `bootstrap2` thread deliberately spins forever **before** sending `SYNC`.
