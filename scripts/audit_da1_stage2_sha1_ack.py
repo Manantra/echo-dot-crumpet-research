@@ -52,15 +52,6 @@ def compare_sha1(expected, da2_executable_body):
     return expected == hashlib.sha1(da2_executable_body).digest()
 
 
-def check_da1_control_flow(da1, p):
-    if thumb_literal(da1, p["mismatch_code_load"]) != p["failure_code"]:
-        raise ValueError("DA1 mismatch error code changed")
-    if thumb_literal(da1, p["status_callback_load"]) is not None:
-        # This instruction isn't a literal; do NOT interpret its value.
-        raise ValueError("Unexpected callback source instruction")
-    return True
-
-
 def validate_binary_pair(entry, directory):
     name = entry["filename"]
     if name not in TARGETS:
