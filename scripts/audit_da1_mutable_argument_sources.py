@@ -102,7 +102,8 @@ def check_mutable_sources(name, da1):
         raise ValueError("Control status word source changed")
     if thumb_literal(da1, refs["second_state_early_pc"]) != second:
         raise ValueError("Separate early DA1 code no longer accesses state table")
-    early = expect_thumb(da1, refs["second_state_early_insn"], "ldr")
+    early = expect_thumb(da1, refs["second_state_early_insn"],
+                         "ldr" if name.endswith("V5.bin") else "str")
     if name.endswith("V5.bin") and "[r3, #8]" not in early.op_str:
         raise ValueError("Early second-source flags field changed")
     if not name.endswith("V5.bin") and "[r5, #0x18]" not in early.op_str:
