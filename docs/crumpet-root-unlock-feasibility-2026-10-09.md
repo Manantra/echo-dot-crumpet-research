@@ -132,6 +132,10 @@ The upstream Python host `boot_to(timeout=0.5)` parameter is a **sleep before st
 
 **Consequent next investigation:** differentiate DA2 execution vs USB status transport using pre-existing redacted host logs and USB device-event timing, rather than assuming the NAND device is unknown or flashing a different DA.
 
+## New 2026-10-10 DA1↔DA2 original ABI result
+
+[Verified DA1-side original Thumb instruction and paired DA2 handoff report](mt8167-da1-runtime-parameter-block-handoff.md): the stock V5 DA1 and AllInOne DA1 both **write** magic `0xFE4A4D42` and create the exact 88B/64B block their matching DA2 expects before passing the address via `R0` and indirect BLX. Consequently, mismatched intrinsic DA1/DA2 parameter layout is not supported for the correctly paired originals. The DA2 bad-magic self-loop exists, but **cannot be assigned to actual Crumpet timeout without evidence of a runtime source/transfer fault**. User-authorized existing RAM/USB/EMI debug traces could discriminate. No memory access, NAND read/restore, root or unlock confirmed on hardware.
+
 ## New Crumpet BROM/EMI finding: a genuine 2019 parser mismatch, not missing hardware profile
 
 [Full upstream source and original firmware-data audit](crumpet-emi-2019-layout-and-brom-nand-gap.md) shows that the embedded `MTK_BLOADER_INFO_v28` **400-byte EMI block has identical SHA-256 `c2a394...` in verified public 2019, official 2021 and Nov-2025 Crumpet Preloaders**, contrary to suspicion that donor-era EMI differs. The original MTKClient parser incorrectly produces a **37152-byte `emiver=28` blob** from the FF-padded public 2019 GFH layout, while extracting exactly 400B from 2021/2025. Its automatic missing-EMI BROM branch matches by **eMMC CID** and does not query raw-NAND chip IDs; it can continue into Stage2 lacking suitable DRAM initialization. This is a reproducible host-side defect and diagnostic lead, **not** a fix proven on Crumpet hardware. No DA2 run/root/unlock is demonstrated, and raw-NAND writes remain unsafe without validated recovery.
