@@ -149,3 +149,7 @@ This repo hosts original research notes and non-destructive scripts only. **No A
 ## License
 
 Original research documentation and scripts in this repository are provided under MIT. Third-party works remain with their original authors.
+
+## Latest DA1 state-provenance update (2026-10-11)
+
+[Default-value initializer and subsequent state-store audit](docs/da1-state-defaults-and-overrides-2026-10-11.md): both exact stock MT8167 DA1 binaries contain default-state initializer routines for the 56/32-byte source later copied into DA2, plus separate stores targeting some of those fields. The [offline checker](scripts/audit_da1_state_initializers.py) requires original SHA-256-pinned agents; ten additional synthetic regressions bring the offline suite to **232/232 passing** (checked on hermes). This is not a live DA2 boot/root result; source initialization order and actual hardware values are still unknown.
