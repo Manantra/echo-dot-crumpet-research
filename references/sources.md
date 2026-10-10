@@ -2,6 +2,10 @@
 
 - [R0rt1z2/amonet-koboreru](https://github.com/R0rt1z2/amonet-koboreru) — exploit source, **untested** Crumpet support.
 - [Crumpet patch source](https://github.com/R0rt1z2/amonet-koboreru/blob/main/devices/crumpet.c).
+- [Verified 2026 DA1 mutable handoff field writes and independent Crumpet unlock-status review](../docs/crumpet-da1-mutable-state-and-october-2026-unlock-status.md) — pinned original V5/AllInOne Thumb xrefs plus dated third-party assessment.
+- [SHA-pinned DA1 mutable state field audit](../scripts/audit_da1_mutable_argument_sources.py) — direct original `STR` and PC-relative source references; no device interaction.
+- [Gamer92000/echo-dot-assist](https://github.com/Gamer92000/echo-dot-assist) — original 2026 maintained support table lists C78MP8 as unsupported, unlike D9N29T.
+- [Home Assistant community Crumpet assessment, 2026-10-03](https://community.home-assistant.io/t/echo-dot-3rd-gen-2018-as-a-fully-local-assist-satellite-keeping-amazons-mic-array-and-wake-word-engine/1025971/36) — maintainer's independent qualitative assessment, not a proven comprehensive exploit audit.
 - [DA1 original SHA-1 status/acknowledgment vs Stage2 `SYNC` independent status](../docs/da1-sha1-status-vs-da2-sync-ack.md) — opcode-proven `0xC0070004` checksum failure vs host accepted-then-wait state.
 - [Offline stock DA SHA1 & MTKClient AST two-ACK verifier](../scripts/audit_da1_stage2_sha1_ack.py) — ten manufactured data/source tests; original full-file SHA-256 pinned.
 - [Crumpet MT8167 DA1 argument block source→R0 assembly and paired DA2 confirmation](../docs/mt8167-da1-runtime-parameter-block-handoff.md) — exact Thumb literal + LDM/STM + indirect BLX, SHA-pinned stock binaries, no runtime execution.
