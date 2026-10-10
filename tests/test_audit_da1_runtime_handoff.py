@@ -53,7 +53,7 @@ class Da1ParamContractTests(unittest.TestCase):
     def test_non_pc_load_rejected(self):
         b = manufactured_da1()
         put(b, DA1_LOAD_BASE + 0x102, bytes.fromhex("1068"))
-        with self.assertRaisesRegex(ValueError, "PC-relative"):
+        with self.assertRaisesRegex(ValueError, "Thumb literal LDR"):
             thumb_literal(bytes(b), DA1_LOAD_BASE + 0x102)
 
     def test_out_of_range_instruction_rejected(self):
