@@ -88,7 +88,9 @@ class MutableStateTests(unittest.TestCase):
     def test_one_removed_second_source_literal_is_detected(self):
         b = bytearray(manufacture(V5))
         b[256:260] = bytes(4)
-        with self.assertRaisesRegex(ValueError, "frequency changed"):
+        with patch.object(mod, "audit_da1",
+                          return_value={"total_argument_bytes": 88}), \
+             self.assertRaisesRegex(ValueError, "frequency changed"):
             mod.check_mutable_sources(V5, bytes(b))
 
     def test_corrupt_source_literal_disassembly_is_rejected(self):
