@@ -56,6 +56,10 @@ The second original DA differs in addresses and transfer counts but follows the 
 
 The [opcode- and host-AST-verified DA1 SHA-1/status report](da1-sha1-status-vs-da2-sync-ack.md) now shows that DA1 compares a 20-byte digest against an embedded SHA-1 for its own DA2 and emits `0xC0070004` on mismatch. Original `send_data()` returns True **only when the first framed DA1 status is 0**, so `Upload data was accepted...` does **not** report an *already returned* DA1 hash rejection. **It also does NOT confirm DA2 executed:** host awaits a separate `SYNC` frame after the indirect jump. The jump/copy register ABI described here is still unobserved on physical Crumpet RAM; the artifact is offline-only.
 
+## Follow-up (2026-10-11): the second DA1 source block is actually mutable
+
+A new [direct static xref and field-store audit](crumpet-da1-mutable-state-and-october-2026-unlock-status.md) verifies that DA1's **56B V5** second source (`0x2393B8`) has **16 literal address occurrences and six actual `STR` sites within the transferred range**, while the **32B AllInOne** second source (`0x222C50`) has ten address occurrences and four store sites. This proves the transferred structure includes **live state**, not just immutable firmware constants. The dynamic values and their relevance to the real Crumpet timeout are **not measured**; no specific field has been conclusively identified as a USB endpoint, DRAM status or chip ID. The previously verified static magic/header ABI remains correct for each original matched pair.
+
 ## 2. What this corrects about the suspected bad-magic Stage-2 hang
 
 The previous analysis found a **real possible DA2 error condition**: if the copied parameter block's first word is **not** `0xFE4A4D42`, the `bootstrap2` thread deliberately spins forever **before** sending `SYNC`.
