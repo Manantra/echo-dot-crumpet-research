@@ -41,6 +41,9 @@ DA1_PROFILES = {
             (0x00201544, "ldm.w", 2), (0x00201548, "stm.w", 2),
         ),
         "return_pointer_instruction": 0x0020154C,
+        "jump_target_load_instruction": 0x00201438,
+        "prior_callback_pointer_load": 0x00201430,
+        "prior_callback_call": 0x00201432,
         "jump_instruction": 0x0020154E,
         "block_register": "r6",
         "jump_register": "r8",
@@ -71,6 +74,9 @@ DA1_PROFILES = {
             (0x00201036, "ldm.w", 4), (0x0020103A, "stm.w", 4),
         ),
         "return_pointer_instruction": 0x0020103E,
+        "jump_target_load_instruction": 0x00200F78,
+        "prior_callback_pointer_load": 0x00200F56,
+        "prior_callback_call": 0x00200F58,
         "jump_instruction": 0x00201040,
         "block_register": "lr",
         "jump_register": "r7",
@@ -181,6 +187,12 @@ def audit_da1(body, profile):
     expected = f"r4, {reg}, #0x20"
     expect_thumb(body, profile["second_dest_instruction"],
                  "add.w", expected)
+    expect_thumb(body, profile["prior_callback_pointer_load"],
+                 "ldr", f"r3, [r7]" if reg == "r6" else "r3, [r6]")
+    expect_thumb(body, profile["prior_callback_call"], "blx", "r3")
+    expect_thumb(body, profile["jump_target_load_instruction"],
+                 "ldr.w" if reg == "r6" else "ldr",
+                 f"{profile['jump_register']}, [sp, #0x10]")
     expect_thumb(body, profile["return_pointer_instruction"],
                  "mov", f"r0, {reg}")
     expect_thumb(body, profile["jump_instruction"],
@@ -197,6 +209,7 @@ def audit_da1(body, profile):
         "total_argument_bytes": profile["total"],
         "final_r0": f"pointer to block ({reg})",
         "indirect_blx_register": profile["jump_register"],
+        "indirect_jump_target_source": "stack [SP+0x10] filled by prior callback",
         "source_binary_values_at_these_RAM_addresses": "NOT OBSERVED",
     }
 
