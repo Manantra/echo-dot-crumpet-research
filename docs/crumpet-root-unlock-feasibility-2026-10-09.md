@@ -132,6 +132,10 @@ The upstream Python host `boot_to(timeout=0.5)` parameter is a **sleep before st
 
 **Consequent next investigation:** differentiate DA2 execution vs USB status transport using pre-existing redacted host logs and USB device-event timing, rather than assuming the NAND device is unknown or flashing a different DA.
 
+## New 2026-10-10: meaning of accepted DA2 data vs Stage-2 execution
+
+[DA1 stock SHA-1 check + MTKClient two-status analysis](da1-sha1-status-vs-da2-sync-ack.md) establishes both DA1 pairs embed the exact SHA-1 of their own executable DA2 and prepare status `0xC0070004` on mismatch. The host prints **`Upload data was accepted. Jumping to stage 2...` only after first status==0** in `send_data()`, and subsequently separately awaits DA2's XFLASH-framed `SYNC`. Therefore the common Crumpet **accepted-then-timeout log is not itself an explicit DA1 hash mismatch**; it also does **not** prove DA2 ever executed. Patching agents may change the meaning of checksum acceptance; no actual target register/USB data captured. No root/unlock or safe NAND write mechanism has been demonstrated.
+
 ## New 2026-10-10 DA1↔DA2 original ABI result
 
 [Verified DA1-side original Thumb instruction and paired DA2 handoff report](mt8167-da1-runtime-parameter-block-handoff.md): the stock V5 DA1 and AllInOne DA1 both **write** magic `0xFE4A4D42` and create the exact 88B/64B block their matching DA2 expects before passing the address via `R0` and indirect BLX. Consequently, mismatched intrinsic DA1/DA2 parameter layout is not supported for the correctly paired originals. The DA2 bad-magic self-loop exists, but **cannot be assigned to actual Crumpet timeout without evidence of a runtime source/transfer fault**. User-authorized existing RAM/USB/EMI debug traces could discriminate. No memory access, NAND read/restore, root or unlock confirmed on hardware.
