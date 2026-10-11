@@ -157,3 +157,7 @@ Original research documentation and scripts in this repository are provided unde
 ### Root research direction (2026-10-11)
 
 **Strategy changed:** [Evidence-gated, eight-route Crumpet root/unlock assessment](docs/crumpet-root-strategy-decision-2026-10-11.md) pauses incremental DA1/DA2 disassembly without fresh physical evidence. Priorities are discriminating *existing* same-device USB/DA2 traces, an independent raw NAND backup/restore validation standard on expendable hardware, and new exact-C78MP8 exploit/unlock evidence. An increased offline regression-test count **does not** imply progress toward root. No verified root/unlock is available.
+
+### NAND evidence integrity (2026-10-11)
+
+The [physical raw-NAND capture audit](docs/crumpet-raw-nand-capture-integrity-gate-2026-10-11.md) documents a key distinction: MT8167 public PRBS/ECC decode tools discard incomplete final pages and the decoded output strips OOB/ECC, so it must **never** be mistaken for a restorable raw capture. The decoder's default format uses four interleaved 1024+8+56 subchunks; actual device layout requires independent validation. New [existing-raw-file streaming capture comparison](scripts/compare_crumpet_raw_nand_captures.py) defaults to an opaque layout and requires two exact, full historical-geometry files unless a partial test is explicitly requested. **250/250 offline tests passed**. A byte-identical capture pair is **not** ECC/BBT/writeback/cold-boot proof.
