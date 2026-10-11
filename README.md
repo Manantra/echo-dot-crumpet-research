@@ -153,3 +153,7 @@ Original research documentation and scripts in this repository are provided unde
 ## Latest DA1 state-provenance update (2026-10-11)
 
 [Default-value initializer and subsequent state-store audit](docs/da1-state-defaults-and-overrides-2026-10-11.md): both exact stock MT8167 DA1 binaries contain default-state initializer routines for the 56/32-byte source later copied into DA2, plus separate stores targeting some of those fields. The [offline checker](scripts/audit_da1_state_initializers.py) requires original SHA-256-pinned agents; ten additional synthetic regressions bring the offline suite to **232/232 passing** (checked on hermes). This is not a live DA2 boot/root result; source initialization order and actual hardware values are still unknown.
+
+### Root research direction (2026-10-11)
+
+**Strategy changed:** [Evidence-gated, eight-route Crumpet root/unlock assessment](docs/crumpet-root-strategy-decision-2026-10-11.md) pauses incremental DA1/DA2 disassembly without fresh physical evidence. Priorities are discriminating *existing* same-device USB/DA2 traces, an independent raw NAND backup/restore validation standard on expendable hardware, and new exact-C78MP8 exploit/unlock evidence. An increased offline regression-test count **does not** imply progress toward root. No verified root/unlock is available.
