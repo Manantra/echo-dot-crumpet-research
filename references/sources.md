@@ -73,3 +73,5 @@
 - [Android update-engine manifest schema](https://android.googlesource.com/platform/system/update_engine/+/HEAD/update_metadata.proto) — public protobuf field specifications.
 
 Do not upload copyrighted firmware, secrets or private device identifiers.
+
+- [2026-10-25 pinned Crumpet unlock blocker matrix and 255-test local offline rerun](../docs/crumpet-unlock-blocker-matrix-2026-10-25.md) — Amonet, DA2, Fastboot and recovery evidence gates, exact source-branch findings and no-hardware outcome.

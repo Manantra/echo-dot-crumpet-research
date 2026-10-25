@@ -169,3 +169,7 @@ The [physical raw-NAND capture audit](docs/crumpet-raw-nand-capture-integrity-ga
 ### Distinguishing Kamakiri from DA2 errors (2026-10-12)
 
 The [latest Crumpet log-provenance check](docs/crumpet-kamakiri-gpt-read-vs-mtkclient-da2-2026-10-12.md) identifies the original historical Kamakiri `Check GPT` → **eMMC 512-byte read** code path. The newly recovered `All good / Check GPT / read fail (got 0 of 512 bytes)` anecdote must **not** be counted as an MTKClient XFLASH DA2 status result; exact Crumpet script identity and the underlying cause remain unknown. The existing [offline log classifier](scripts/classify_mtkclient_stage2.py) and five more synthetic tests enforce this distinction; **255/255** suite tests passed locally. No hardware intervention or root achieved.
+
+### Current blocker matrix and verified offline rerun (2026-10-25)
+
+The [13-gate Crumpet root/unlock matrix](docs/crumpet-unlock-blocker-matrix-2026-10-25.md) compares pinned upstream `d51af73` against existing Amonet, DA2, Fastboot and NAND evidence. On an isolated `hermes` checkout **255/255 offline tests passed** with Capstone 4 made available and the read-only Crumpet boot-flow source audit confirmed the original nonreturning USB path and `expdb` configuration. The three later Amonet commits change `suez` and conditional common TEE code, **not a validated Crumpet boot path**. No device/USB/flash operation, persistent unlock or root was performed.
