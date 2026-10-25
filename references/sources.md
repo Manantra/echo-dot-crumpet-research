@@ -75,3 +75,8 @@
 Do not upload copyrighted firmware, secrets or private device identifiers.
 
 - [2026-10-25 pinned Crumpet unlock blocker matrix and 255-test local offline rerun](../docs/crumpet-unlock-blocker-matrix-2026-10-25.md) — Amonet, DA2, Fastboot and recovery evidence gates, exact source-branch findings and no-hardware outcome.
+
+- [2026-10-25 independently reproduced Crumpet Fire OS 2022/2023 OOBE and OTA binary audit](../docs/crumpet-fireos-oobe-ota-static-audit-2026-10-25.md) — SHA-256-verified official archive/system images, 18 exported RPC processor methods, init privilege separation, changed orchestrators and unchanged trust material. No custom-install path proven.
+- [OpenDot original 2022–2023 official OTA file/hashes analysis](https://github.com/chadakenn/opendot/blob/main/docs/firmware-comparison.md) — independently reproduced archive and partition values, not proof of publisher signature verification.
+- [OpenDot earlier OOBE/OTA architecture hypotheses](https://github.com/chadakenn/opendot/blob/main/docs/ota-architecture.md) — previously unverified observations, now selectively cross-checked by original binaries.
+- [FTVDB Crumpet OTA source index](https://github.com/FTVDB/FTVDB/blob/main/database/firmware/com.amazon.crumpet.android.os.json) — Amazon CloudFront archive URLs and version metadata.

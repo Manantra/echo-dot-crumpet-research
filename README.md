@@ -173,3 +173,7 @@ The [latest Crumpet log-provenance check](docs/crumpet-kamakiri-gpt-read-vs-mtkc
 ### Current blocker matrix and verified offline rerun (2026-10-25)
 
 The [13-gate Crumpet root/unlock matrix](docs/crumpet-unlock-blocker-matrix-2026-10-25.md) compares pinned upstream `d51af73` against existing Amonet, DA2, Fastboot and NAND evidence. On an isolated `hermes` checkout **255/255 offline tests passed** with Capstone 4 made available and the read-only Crumpet boot-flow source audit confirmed the original nonreturning USB path and `expdb` configuration. The three later Amonet commits change `suez` and conditional common TEE code, **not a validated Crumpet boot path**. No device/USB/flash operation, persistent unlock or root was performed.
+
+### Crumpet Fire OS OOBE/OTA route: pinned binary audit (2026-10-25)
+
+[Read-only examination of official 2022 and 2023 Crumpet Fire OS images](docs/crumpet-fireos-oobe-ota-static-audit-2026-10-25.md) independently enumerated **18 identical Thrift RPC processor methods** in `libdoppleroobe.so` and the conditional `oobed` setup service. No named firmware-upload/install method was found in that API inventory. Amazon `update_engine`, OTA public key and `otacerts.zip` are byte-identical across those versions, while orchestration binaries differ. **No proven Wi-Fi-only installation, arbitrary code execution, root or unlock; the 13 original blocker gates remain open or unchanged.**
