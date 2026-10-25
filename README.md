@@ -4,6 +4,21 @@ Public, community-oriented **read-only reverse-engineering research** for the Am
 
 > **Status: no independently confirmed persistent root, unlock or functional TWRP procedure for Crumpet.** This is not an unlock kit. **Do not flash Donut images to Crumpet.**
 
+## Research at a glance
+
+This repository documents **evidence and limitations**, not a working unlock method or step-by-step flashing instructions. It investigates firmware, boot-chain behavior, NAND storage and published research for the **Echo Dot 3rd Gen Refresh (C78MP8 / Crumpet)**. The older Echo Dot 3 **Donut** is a different target; results must not be assumed to transfer.
+
+| Question | Current answer |
+| :-- | :-- |
+| **What is documented?** | Public UART/firmware evidence, official OTA comparisons, static binary analysis, and reproducible **read-only / offline** checks. |
+| **Is a working root or unlock confirmed?** | **No.** A possible mechanism, offline test pass, or community report is **not** proof of an on-device exploit or safe restoration. |
+| **Where should a new reader begin?** | [Research status and evidence levels](STATUS.md) → [October 25 blocker matrix](docs/crumpet-unlock-blocker-matrix-2026-10-25.md) → [Boot-chain overview](docs/boot-chain.md). |
+| **How can I reproduce a safe check?** | See [read-only Python tools](#read-only-python-tools) and [scope and safety](#scope-and-safety). Avoid writing to a device or using mismatched firmware. |
+
+**Research navigation:** [Known findings](#what-is-known) · [Where to start](#where-to-start) · [Offline tools](#read-only-python-tools) · [Evidence and safety](#scope-and-safety) · [Latest October 25 OTA audit](#crumpet-fire-os-oobeota-route-pinned-binary-audit-2026-10-25).
+
+The sections below intentionally retain technical details and source-linked claims for readers who need to inspect the evidence.
+
 ## What is known
 
 - **2026-10-14 community/source update:** [Joost reports retained raw NAND pages and a decoded image](https://github.com/jvandewiel/no-alexa/issues/5#issuecomment-6141779362), but exact 4352/4532-byte page geometry, capture provenance, ECC/BBT and physical restore remain unverified. See [evidence and uncertainty review](docs/crumpet-community-evidence-update-2026-10-14.md).
