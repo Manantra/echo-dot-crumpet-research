@@ -192,3 +192,7 @@ The [13-gate Crumpet root/unlock matrix](docs/crumpet-unlock-blocker-matrix-2026
 ### Crumpet Fire OS OOBE/OTA route: pinned binary audit (2026-10-25)
 
 [Read-only examination of official 2022 and 2023 Crumpet Fire OS images](docs/crumpet-fireos-oobe-ota-static-audit-2026-10-25.md) independently enumerated **18 identical Thrift RPC processor methods** in `libdoppleroobe.so` and the conditional `oobed` setup service. No named firmware-upload/install method was found in that API inventory. Amazon `update_engine`, OTA public key and `otacerts.zip` are byte-identical across those versions, while orchestration binaries differ. **No proven Wi-Fi-only installation, arbitrary code execution, root or unlock; the 13 original blocker gates remain open or unchanged.**
+
+### Separate device track: Donut D9N29T (2026-10-27)
+
+A [read-only preflight for the **distinct** Echo Dot 3 2018 Donut (D9N29T)](docs/donut-d9n29t-preflight-2026-10-27.md) compares `kamakiri-donut`, `echo-dot-assist` and TECHO5 Dot for user-reported `NS6575/8344`, with published expected file hashes, USB/eMMC boundaries and explicit **no-go** for a live unlock pending recovery preparation. **This is not Crumpet support**; do not reuse Donut procedures or binaries on C78MP8.
