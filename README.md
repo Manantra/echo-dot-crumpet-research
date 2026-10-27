@@ -196,3 +196,5 @@ The [13-gate Crumpet root/unlock matrix](docs/crumpet-unlock-blocker-matrix-2026
 ### Separate device track: Donut D9N29T (2026-10-27)
 
 A [read-only preflight for the **distinct** Echo Dot 3 2018 Donut (D9N29T)](docs/donut-d9n29t-preflight-2026-10-27.md) compares `kamakiri-donut`, `echo-dot-assist` and TECHO5 Dot for user-reported `NS6575/8344`, with published expected file hashes, USB/eMMC boundaries and explicit **no-go** for a live unlock pending recovery preparation. **This is not Crumpet support**; do not reuse Donut procedures or binaries on C78MP8.
+
+[2026-10-27 Donut hardware-only USB and Linux host preparation](docs/donut-usb-physical-preflight-2026-10-27.md): distinguishes the original Donut base-board `TM4/TM5` USB signals from same-named but unrelated **top-board pads**, documents a possible under-rubber-foot six-pin inspection before disassembly, and keeps all exploit/flash steps prohibited pending real-device electrical verification and recovery planning. Not applicable to Crumpet.
