@@ -1,6 +1,32 @@
-# Research status — 2026-10-14
+# Research status — 2026-10-31
 
 **No proven persistent unlock, root or TWRP for Crumpet (C78MP8).** This repository is research, not a flash guide.
+
+## 2026-10-31 live negative result
+
+A [sanitized report](docs/crumpet-live-2021-keyed-tee1-negative-result-2026-10-31.md)
+records one sacrificial C78MP8 taken through a RAM rescue, a full read-only
+main+OOB MTD dump, an offline 2021-preloader/keyed-TEE1/LK composition, and one
+authorized seven-partition write.
+
+Observed:
+
+- All seven partition readbacks matched their expected SHA-256; the NAND writes
+  were not torn.
+- The official 2021 preloader was accepted and executed by the live BootROM.
+  It parsed GPT, authenticated `lk_b`, verified the TEE1 ATF prefix, then hung
+  while loading the second `lk` subimage at `blknr=0xE0F, blks=0x108`.
+- The observed boundary is after preloader acceptance and during the second
+  subimage load; no keyed-overlay callback output was observed. This is not a
+  preloader-image rejection.
+- Volume Down + Action did not enter USBDL; Action/KCOL0 grounded produced only
+  `0e8d:2000`, never `0e8d:0003`, on both macOS and Linux event-level captures.
+- The preloader serial tool reported `memread=false`, `memwrite=false`;
+  `JUMP_BL` produced no status and `JUMP_DA` to the loaded LK returned `0x2001`.
+- No software recovery remained. Hardware NAND/test-point recovery is required.
+
+This is one unit's negative result, not a general Crumpet unlock claim. The
+existing no-go gate for boot-critical writes remains appropriate.
 
 **October 14 evidence update:** [documented NAND-owner testimony and upstream Amonet commit comparison](docs/crumpet-community-evidence-update-2026-10-14.md). New community-reported raw pages and a decoded image do **not** establish independent raw integrity, physical restore or root. The maintainer reports active support work, but there is no publicly verified C78MP8 implementation. This status supplement does not supersede SHA-pinned older static audits.
 
